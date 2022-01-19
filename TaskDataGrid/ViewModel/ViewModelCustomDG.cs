@@ -16,9 +16,12 @@ namespace TaskDataGrid.ViewModel
 {
   public  class ViewModelCustomDG: ViewModelBase
     {
-        private DataTable DataTable = new DataTable();
+        public DataTable DataTable { get; set; } = new DataTable();
       public  DataView DataView { get; set; } = new DataView();
         private static string ColumnHeader_Property="";
+        private List<int> listColumnHeader_PropertyDateTime = new List<int>();
+        public Visibility lbFilterVisibility { get; set; } = Visibility.Visible;
+        public Visibility TreeVisibility { get; set; } = Visibility.Visible;
         public bool IsOpen { get; set; } = false;
         Dictionary<string, ObservableCollection<FilterObj>> filters=new Dictionary<string, ObservableCollection<FilterObj>>();
         Dictionary<string, ObservableCollection<IHierarchy<DateTime>>> filtersDate = new Dictionary<string, ObservableCollection<IHierarchy<DateTime>>>();
@@ -48,6 +51,8 @@ namespace TaskDataGrid.ViewModel
 
             SqlDataAdapter adapter = new SqlDataAdapter(command);
             adapter.Fill(DataTable);
+            listColumnHeader_PropertyDateTime.Add(4);
+            listColumnHeader_PropertyDateTime.Add(5);
             connection.Close();
             connection.Dispose();
             DataView=DataTable.DefaultView;
@@ -61,11 +66,17 @@ namespace TaskDataGrid.ViewModel
                 return new RelayCommand<string>(( string ColumnHeader_Property_Parameter) => {
                     ListFilterContent = new ObservableCollection<FilterObj>();
                     ColumnHeader_Property = ColumnHeader_Property_Parameter;
+                    lbFilterVisibility = Visibility.Visible;
+                    TreeVisibility = Visibility.Visible;
+                    Dates = new ObservableCollection<IHierarchy<DateTime>>();
+                    DateTimes = new List<DateTime>();
                     if (DataTable.Columns[ColumnHeader_Property].DataType == typeof(DateTime))
                     {
+                        _dates = new ObservableCollection<IHierarchy<DateTime>>();
+
                         foreach (DataRow item in DataTable.Rows)
                         {
-                            DateTimes.Add(Convert.ToDateTime( item[ColumnHeader_Property]));
+                            DateTimes.Add(Convert.ToDateTime(item[ColumnHeader_Property]));
                         }
                         _dates = BuildDates(DateTimes);
                         if (!filtersDate.ContainsKey(ColumnHeader_Property))
@@ -73,46 +84,74 @@ namespace TaskDataGrid.ViewModel
                             filtersDate.Add(ColumnHeader_Property, _dates);
                         }
                         _dates = filtersDate[ColumnHeader_Property];
+                        lbFilterVisibility = Visibility.Collapsed;
+                        RaisePropertyChanged("Dates");
+                    }
+                    if (listColumnHeader_PropertyDateTime.Contains(DataTable.Columns[ColumnHeader_Property].Ordinal))
+                    {
+                        _dates = new ObservableCollection<IHierarchy<DateTime>>();
+                        foreach (DataRow item in DataTable.Rows)
+                        {
+                            DateTimes.Add(Convert.ToDateTime(item[ColumnHeader_Property]));
+                           // MessageBox.Show(ColumnHeader_Property.ToString());
+                        }
+                        _dates = BuildDates(DateTimes);
+                        if (!filtersDate.ContainsKey(ColumnHeader_Property))
+                        {
+                            filtersDate.Add(ColumnHeader_Property, _dates);
+                        }
+                        _dates = filtersDate[ColumnHeader_Property];
+                        lbFilterVisibility = Visibility.Collapsed;
+
                         RaisePropertyChanged("Dates");
                     }
                     else
                     {
+                        List<string> vs1 = new List<string>();
                         foreach (DataRow item in DataTable.Rows)
                         {
-                            ListFilterContent.Add(new FilterObj { IsChecked = true, Title = item[ColumnHeader_Property].ToString() });
+                            vs1.Add(item[ColumnHeader_Property].ToString());
+                            //   ListFilterContent.Add(new FilterObj { IsChecked = true, Title = item[ColumnHeader_Property].ToString() });
                         }
 
-                        ListFilterContent.Distinct();
+                       vs1= vs1.Distinct().ToList();
+                        //  MessageBox.Show(.Count().ToString()) ;
+                        foreach (var item in vs1)
+                        {
+                            ListFilterContent.Add(new FilterObj { IsChecked = true, Title = item });
+                           // MessageBox.Show(item);
+                        }
+
                         if (!filters.ContainsKey(ColumnHeader_Property))
                         {
                             filters.Add(ColumnHeader_Property, ListFilterContent);
                         }
 
                         ListFilterContent = filters[ColumnHeader_Property];
+                        TreeVisibility = Visibility.Collapsed;
                         RaisePropertyChanged("ListFilterContent");
                     }
-                   
 
-                 
+                    RaisePropertyChanged("lbFilterVisibility");
+                    RaisePropertyChanged("TreeVisibility");
+
+
 
                 });
             }
         }
 
-
+        string filterstring = "";
         public RelayCommand StartSorted
         { 
             get
             {
-                return new RelayCommand(()=> {
+                return new RelayCommand(()=>
+                {
                     string filterstring = "";
-
-                    foreach (var item in ListFilterContent.Where(x => x.IsChecked == false))
+                    foreach (var item in stringfilter)
                     {
-
-                        filterstring += string.Format("{0} <>'{1}' And ", ColumnHeader_Property,item.Title);
-                        //MessageBox.Show();
-
+                        filterstring += item;
                     }
                     int count = filterstring.Length;
                     int i = filterstring.LastIndexOf("And");
@@ -120,103 +159,40 @@ namespace TaskDataGrid.ViewModel
                     {
                         filterstring = filterstring.Substring(0, i) + filterstring.Substring(i + "And".Length);
                     }
+                   // MessageBox.Show(filterstring);
+
                     DataView.RowFilter = filterstring;
-                 
-
-                    RaisePropertyChanged("DataTable");
-
-                    //foreach (var item in _dates)
-                    //{
-                    //    foreach (var item2 in item.Children)
-                    //    {
-                    //        MessageBox.Show(item2.Level.ToString());
-                    //    }
-
-                    //}
-                    int count1 = 0;
-                    int count2 = 0;
-                    int count3 = 0;
-                    foreach (var item in _dates.Where(x=>x.Level==1))
-                    {
-                        count1++;
-                        //MessageBox.Show(item.Value.ToString()); ;
-                        foreach (var item2 in item.Children)
-                        {
-                        if (item2.IsChecked == true)
-                            {
-
-                            }
-                            count2++;
-                        }
-                    }
-
-                    foreach (var item in Vs)
-                    {
-                        v += item/*+" Or "*/;
-                    }
-
-                    int ii = v.LastIndexOf("Or");
-                    if (ii >= 0)
-                    {
-                        v = v.Substring(0, ii) + v.Substring(ii + "Or".Length);
-                    }
-                    MessageBox.Show(v);
-
-                    DataView.RowFilter = v;
-
                     RaisePropertyChanged("DataView");
 
-                    //  MessageBox.Show( string.Format("1:{0} 2:{1}",count1,count2));
-
-
-                    v = "";
+                    Ok();
                 });  
  
 
                
             }
-        }  
-
-        void vd()
-        {
-            //if (content == "2")
-            //{
-            //    string v = String.Format("StartDate >= # {0} # and StartDate<=# {1} #", DateTime.Parse(value).ToString("MM/01/yyyy"), DateTime.Parse(value).ToString("MM/31/yyyy"));
-            //    Table.RowFilter = v;
-            //}
-            //else if (content == "1")
-            //{
-            //    string v = String.Format("StartDate >= # {0} # and StartDate<=# {1} #", DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/31/yyyy"));
-            //    Table.RowFilter = v;
-            //}
-            //else if (content == "3")
-            //{
-            //    string v = String.Format("StartDate = # {0}# ", DateTime.Parse(value).ToString("MM/dd/yyyy"));
-            //    Table.RowFilter = v;
-            //}
         }
-        public bool IsChecked
+
+        private void Ok()
         {
-            get { MessageBox.Show(IsChecked.ToString()); return true; }
+            foreach (var item in Vs)
+            {
+                v += item;
+            }
+
+            int ii = v.LastIndexOf("Or");
+            if (ii >= 0)
+            {
+                v = v.Substring(0, ii) + v.Substring(ii + "Or".Length);
+            }
+
+            DataView.RowFilter = v;
+
+            RaisePropertyChanged("DataView");
+
+            v = "";
         }
-        public string tag;
-        public string Tag { get { MessageBox.Show(tag); return tag; } set { tag = value; } }
-        //public RelayCommand IsChecked
-        //{ 
-        //    get
-        //    {
-        //        return new RelayCommand(()=> {
 
 
-        //            MessageBox.Show("ok");
-
-
-        //        });  
-
-
-
-        //    }
-        //}
 
         string v = "";
         List<string> Vs = new List<string>();
@@ -235,52 +211,86 @@ namespace TaskDataGrid.ViewModel
                         // MessageBox.Show(DateTime.Parse(value).ToString("MM/31/yyyy").ToString()); ;
                         ////v += String.Format("StartDate >= # {0} # and StartDate<=#{1}# Or ", DateTime.Parse(value).ToString("MM/01/yyyy"), DateTime.Parse(value).ToString("MM/"+colday.ToString()+ "/yyyy"));
                         //DataView.RowFilter = v;
-                        Vs.Remove(String.Format("StartDate >= # {0} # and StartDate<=# {1}# Or ", DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/31/yyyy")));
+                        Vs.Remove(String.Format("StartDate >= # {0} # and StartDate<=# {1}# Or ", DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
                         Vs.Add(String.Format("StartDate >= # {0} # and StartDate<=#{1}#  Or ", DateTime.Parse(value).ToString("MM/01/yyyy"), DateTime.Parse(value).ToString("MM/" + colday.ToString() + "/yyyy")));
                     }
                     else if (content == "1")
                     {
                         //v = String.Format("StartDate >= # {0} # and StartDate<=# {1}# Or ", DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/31/yyyy"));
                        
-                        Vs.Add(String.Format("StartDate >= # {0} # and StartDate<=# {1}# Or ", DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/31/yyyy")));
+                        Vs.Add(String.Format("StartDate >= # {0} # and StartDate<=# {1}# Or ", DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
                         //DataView.RowFilter = v;
                     }
                     else if (content == "3")
                     {
-                         //v += String.Format("StartDate = # {0}# Or ", DateTime.Parse(value).ToString("MM/dd/yyyy"));
-                        Vs.Add(String.Format("StartDate = # {0}#  ", DateTime.Parse(value).ToString("MM/dd/yyyy")));
+                        //v += String.Format("StartDate = # {0}# Or ", DateTime.Parse(value).ToString("MM/dd/yyyy"));
+                        Vs.Remove(String.Format("StartDate >= # {0} # and StartDate<=# {1}# Or ", DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
+                        Vs.Remove(String.Format("StartDate >= # {0} # and StartDate<=# {1}# Or ", DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
+
+                        Vs.Add(String.Format("StartDate = # {0}#  Or ", DateTime.Parse(value).ToString("MM/dd/yyyy")));
                     }
                    
                 
                 });
             }
-        } public RelayCommand<DateHierarchy> Date_UnChecked
+        } 
+        public RelayCommand<DateHierarchy> Date_UnChecked
         {
             get
             {
                 return new RelayCommand<DateHierarchy>((DateHierarchy sender)=> {
-                    //string content = sender.Level.ToString();
-                    //string value = sender.Value.ToString();
-                    //if (content == "2")
-                    //{
-                    //    string v = String.Format("StartDate >= # {0} # and StartDate<=# {1} #", DateTime.Parse(value).ToString("MM/01/yyyy"), DateTime.Parse(value).ToString("MM/31/yyyy"));
-                    //    DataView.RowFilter = v;
-                    //}
-                    //else if (content == "1")
-                    //{
-                    //    string v = String.Format("StartDate = # {0} # and StartDate>=# {1} #", DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/31/yyyy"));
-                    //    DataView.RowFilter = v;
-                    //}
-                    //else if (content == "3")
-                    //{
-                    //    string v = String.Format("StartDate = # {0}# ", DateTime.Parse(value).ToString("MM/dd/yyyy"));
-                    //    DataView.RowFilter = v;
-                    //}
-                    Vs.Clear();
-                    v = "";
-                    DataView.RowFilter = "";
-                    RaisePropertyChanged("DataView");
-                
+
+
+                    string content = sender.Level.ToString();
+                    string value = sender.Value.ToString();
+                    int colday = DateTime.DaysInMonth(DateTime.Parse(value).Year, DateTime.Parse(value).Month);
+
+                    if (content == "2")
+                    {
+            
+                        Vs.Remove(String.Format("StartDate >= # {0} # and StartDate<=# {1}# Or ", DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
+                        //Vs.Add(String.Format("StartDate >= # {0} # and StartDate<=#{1}#  Or ", DateTime.Parse(value).ToString("MM/01/yyyy"), DateTime.Parse(value).ToString("MM/" + colday.ToString() + "/yyyy")));
+                    }
+                    else if (content == "1")
+                    {
+        
+                        Vs.Remove(String.Format("StartDate >= # {0} # and StartDate<=# {1}# Or ", DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
+                    }
+                    else if (content == "3")
+                    {
+             
+                        Vs.Remove(String.Format("StartDate = # {0}#  Or ", DateTime.Parse(value).ToString("MM/dd/yyyy")));
+                    }
+
+                    //  RaisePropertyChanged("DataView");
+
+                });
+            }
+        }
+        List<string> stringfilter = new List<string>();
+        public RelayCommand<FilterObj> String_Checked
+        {
+            get
+            {
+                return new RelayCommand<FilterObj>((FilterObj sender)=> {
+                    stringfilter.Remove(string.Format("{0} <>'{1}' And ", ColumnHeader_Property, sender.Title));
+
+                    // MessageBox.Show(sender..ToString());
+                    //  RaisePropertyChanged("DataView");
+
+                });
+            }
+        }
+        public RelayCommand<FilterObj> String_UnChecked
+        {
+            get
+            {
+                return new RelayCommand<FilterObj>((FilterObj sender)=> {
+                    stringfilter.Add(string.Format("{0} <>'{1}' And ", ColumnHeader_Property, sender.Title));
+
+
+                    //  RaisePropertyChanged("DataView");
+
                 });
             }
         }

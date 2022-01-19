@@ -32,7 +32,7 @@
             VirtualizingStackPanel.VirtualizationMode="Recycling"
                   CanUserAddRows="False" Margin="50"
                    x:Name="gr"    ItemsSource="{Binding DataView}" 
-                  ForceCursor="True"  >
+                  ForceCursor="True">
             <!--Loaded="gr_Loaded" LoadingRow="DataGrid_LoadingRow" Initialized="gr_Initialized"-->
             <DataGrid.Resources>
 
@@ -178,17 +178,30 @@
                             MaxHeight="300" 
                             MinHeight="200" ScrollViewer.VerticalScrollBarVisibility="Visible"
                             BorderBrush="Black" BorderThickness="1" Background="White" 
-                            Margin="10" x:Name="lbFilter" >
+                            Margin="10" x:Name="lbFilter" Visibility="{Binding lbFilterVisibility}" >
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <CheckBox BorderBrush="Transparent"    Content="{Binding Title}"  Foreground="#FF171111" ></CheckBox><!--Checked="CheckBox_Checked"Unchecked="CheckBox_Unchecked"-->
+                                    <CheckBox BorderBrush="Transparent" IsChecked="{Binding IsChecked}"   Content="{Binding Title}"  Foreground="#FF171111" >
+
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="Checked">
+                                                <cmd:EventToCommand Command="{Binding DataContext.String_Checked, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}"
+                                                     PassEventArgsToCommand="True" />
+                                            </i:EventTrigger>
+                                            <i:EventTrigger EventName="Unchecked">
+                                                <cmd:EventToCommand Command="{Binding DataContext.String_UnChecked, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}"
+                                                     PassEventArgsToCommand="True" />
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+
+                                    </CheckBox><!--Checked="CheckBox_Checked"Unchecked="CheckBox_Unchecked"-->
 
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
 
                         </ListBox>
 
-                        <TreeView   x:Name="Tree" ItemsSource="{Binding Dates}"
+                        <TreeView  Visibility="{Binding TreeVisibility}"  x:Name="Tree" ItemsSource="{Binding Dates}"
           ><!--SelectedItemChanged="TreeView_SelectedItemChanged"-->
                             <TreeView.ItemTemplate>
                                 <HierarchicalDataTemplate ItemsSource="{Binding Children}">

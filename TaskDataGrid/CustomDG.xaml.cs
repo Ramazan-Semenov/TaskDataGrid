@@ -2,6 +2,7 @@
 using GalaSoft.MvvmLight.Command;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,13 +23,35 @@ namespace TaskDataGrid
     /// </summary>
     public partial class CustomDG : UserControl
     {
+        public static readonly DependencyProperty ListTypeDateProperty = DependencyProperty.Register(
+       nameof(ListTypeDate), typeof(IList<int>), typeof(CustomDG), new FrameworkPropertyMetadata(new List<int>(),
+          FrameworkPropertyMetadataOptions.None));
 
+        public IList<int> ListTypeDate
+        {
+            get { return (IList<int>)GetValue(ListTypeDateProperty); }
+            set { SetValue(ListTypeDateProperty, value); }
+        } 
+       
+        public static readonly DependencyProperty DataTablePropProperty = DependencyProperty.Register(
+       nameof(DataTableProp), typeof(DataTable), typeof(CustomDG), new FrameworkPropertyMetadata(new DataTable(),
+          FrameworkPropertyMetadataOptions.None));
+
+        public DataTable DataTableProp
+        {
+            get { return (DataTable)GetValue(DataTablePropProperty); }
+            set { SetValue(DataTablePropProperty, value); }
+        }
         public CustomDG()
         {
             InitializeComponent();
-            DataContext = new ViewModel.ViewModelCustomDG();
-        
+            this.Loaded += CustomDG_Loaded;
 
+        }
+
+        private void CustomDG_Loaded(object sender, RoutedEventArgs e)
+        {
+            DataContext = new ViewModel.ViewModelCustomDG(DataTableProp, ListTypeDate);
         }
 
         private void p_Click(object sender, RoutedEventArgs e)

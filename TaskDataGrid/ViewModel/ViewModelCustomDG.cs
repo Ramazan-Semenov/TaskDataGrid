@@ -40,22 +40,23 @@ namespace TaskDataGrid.ViewModel
             } }
 
         public ObservableCollection<FilterObj> ListFilterContent { get; set; } = new ObservableCollection<FilterObj>();
-        public ViewModelCustomDG()
+        public ViewModelCustomDG(DataTable DataTable,IEnumerable<int> listColumnHeader_PropertyDateTime=null)
         {
-            SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\lenovo\source\repos\ConsoleApp1\ConsoleApp1\Database1.mdf;Integrated Security=True;Connect Timeout=30");
+            //SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\lenovo\source\repos\ConsoleApp1\ConsoleApp1\Database1.mdf;Integrated Security=True;Connect Timeout=30");
 
             
-            connection.Open();
-            Console.WriteLine("Start1");
-            SqlCommand command = new SqlCommand("SELECT TOP(100) [Id] ,[FirstName] ,[LastName] ,[Manager] ,[Salary] ,[StartDate]  FROM [dbo].[Employe]", connection);
+            //connection.Open();
+            //Console.WriteLine("Start1");
+            //SqlCommand command = new SqlCommand("SELECT TOP(100) [Id] ,[FirstName] ,[LastName] ,[Manager] ,[Salary] ,[StartDate]  FROM [dbo].[Employe]", connection);
 
-            SqlDataAdapter adapter = new SqlDataAdapter(command);
-            adapter.Fill(DataTable);
-            listColumnHeader_PropertyDateTime.Add(4);
-            listColumnHeader_PropertyDateTime.Add(5);
-            connection.Close();
-            connection.Dispose();
-            DataView=DataTable.DefaultView;
+            //SqlDataAdapter adapter = new SqlDataAdapter(command);
+            //adapter.Fill(DataTable);
+
+            this.listColumnHeader_PropertyDateTime =new List<int>(listColumnHeader_PropertyDateTime);
+            //connection.Close();
+            //connection.Dispose();
+            this.DataTable = DataTable;
+            DataView =this.DataTable.DefaultView;
        
           //  BuildDates(new List<DateTime> { DateTime.Now, DateTime.Parse("17.12.2022"), DateTime.Parse("17.12.2021"), DateTime.Parse("10.01.2021") }) ;
         }

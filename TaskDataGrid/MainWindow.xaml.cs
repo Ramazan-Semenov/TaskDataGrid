@@ -28,7 +28,7 @@ namespace TaskDataGrid
             InitializeComponent();
             //DataContext = new s();
             SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\lenovo\source\repos\ConsoleApp1\ConsoleApp1\Database1.mdf;Integrated Security=True;Connect Timeout=30");
-
+           
 
             connection.Open();
             Console.WriteLine("Start1");
@@ -38,7 +38,10 @@ namespace TaskDataGrid
             SqlDataAdapter adapter = new SqlDataAdapter(command);
             adapter.Fill(dataTable);
 
-            //M. = dataTable;
+
+
+            M.DataTableProp = dataTable;
+            M.ListTypeDate = new List<int>() {4,5};
         }
 
        

@@ -159,12 +159,12 @@ namespace TaskDataGrid.ViewModel
                     {
                         filterstring = filterstring.Substring(0, i) + filterstring.Substring(i + "And".Length);
                     }
-                   // MessageBox.Show(filterstring);
+               //    MessageBox.Show(filterstring);
 
                     DataView.RowFilter = filterstring;
                     RaisePropertyChanged("DataView");
 
-                    Ok();
+                  //  Ok();
                 });  
  
 
@@ -186,13 +186,40 @@ namespace TaskDataGrid.ViewModel
             }
 
             DataView.RowFilter = v;
-
+          //  MessageBox.Show(v);
             RaisePropertyChanged("DataView");
-
-            v = "";
+           v = "";
         }
+        public RelayCommand textsearchcommand
+        {
+            get
+            {
+                return new RelayCommand(()=>
+                {
+                    if (_textsearch!=null)
+                    {
+                    ListFilterContent=new ObservableCollection<FilterObj>( ListFilterContent.Where(w => w.Title.IndexOf(_textsearch, StringComparison.OrdinalIgnoreCase) >= 0));
 
+                    }
+                     if (_textsearch==string.Empty)
+                    {
 
+                        ListFilterContent = filters[ColumnHeader_Property];
+                    }
+
+                    RaisePropertyChanged("ListFilterContent");
+
+                });
+            }
+        }
+      public string textsearch { 
+            get {
+              
+                return _textsearch;
+            } set {
+                _textsearch = value;
+              } }
+        private string _textsearch=string.Empty;
 
         string v = "";
         List<string> Vs = new List<string>();
@@ -208,29 +235,25 @@ namespace TaskDataGrid.ViewModel
 
                     if (content == "2")
                     {
-                        // MessageBox.Show(DateTime.Parse(value).ToString("MM/31/yyyy").ToString()); ;
-                        ////v += String.Format("StartDate >= # {0} # and StartDate<=#{1}# Or ", DateTime.Parse(value).ToString("MM/01/yyyy"), DateTime.Parse(value).ToString("MM/"+colday.ToString()+ "/yyyy"));
-                        //DataView.RowFilter = v;
-                        Vs.Remove(String.Format("StartDate >= # {0} # and StartDate<=# {1}# Or ", DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
-                        Vs.Add(String.Format("StartDate >= # {0} # and StartDate<=#{1}#  Or ", DateTime.Parse(value).ToString("MM/01/yyyy"), DateTime.Parse(value).ToString("MM/" + colday.ToString() + "/yyyy")));
+
+                        Vs.Remove(String.Format("{0} >= # {1} # and {0} <=# {2}# Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
+                        Vs.Add(String.Format("{0}  >= # {1} # and {0} <=#{2}#  Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("MM/01/yyyy"), DateTime.Parse(value).ToString("MM/" + colday.ToString() + "/yyyy")));
                     }
                     else if (content == "1")
                     {
-                        //v = String.Format("StartDate >= # {0} # and StartDate<=# {1}# Or ", DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/31/yyyy"));
                        
-                        Vs.Add(String.Format("StartDate >= # {0} # and StartDate<=# {1}# Or ", DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
-                        //DataView.RowFilter = v;
+                        Vs.Add(String.Format("{0} >= # {1} # and {0} <=# {2}# Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
                     }
                     else if (content == "3")
                     {
                         //v += String.Format("StartDate = # {0}# Or ", DateTime.Parse(value).ToString("MM/dd/yyyy"));
-                        Vs.Remove(String.Format("StartDate >= # {0} # and StartDate<=# {1}# Or ", DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
-                        Vs.Remove(String.Format("StartDate >= # {0} # and StartDate<=# {1}# Or ", DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
+                        Vs.Remove(String.Format("{0}  >= # {1} # and {0} <=# {2}# Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
+                        Vs.Remove(String.Format("{0}  >= # {1} # and {0} <=#{2}#  Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("MM/01/yyyy"), DateTime.Parse(value).ToString("MM/" + colday.ToString() + "/yyyy")));
 
-                        Vs.Add(String.Format("StartDate = # {0}#  Or ", DateTime.Parse(value).ToString("MM/dd/yyyy")));
+                        Vs.Add(String.Format("{0}  = # {1}#  Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("MM/dd/yyyy")));
                     }
-                   
-                
+
+                    Ok();
                 });
             }
         } 
@@ -248,21 +271,21 @@ namespace TaskDataGrid.ViewModel
                     if (content == "2")
                     {
             
-                        Vs.Remove(String.Format("StartDate >= # {0} # and StartDate<=# {1}# Or ", DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
+                        Vs.Remove(String.Format("{0}  >= # {1} # and {0} <=#{2}#  Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
                         //Vs.Add(String.Format("StartDate >= # {0} # and StartDate<=#{1}#  Or ", DateTime.Parse(value).ToString("MM/01/yyyy"), DateTime.Parse(value).ToString("MM/" + colday.ToString() + "/yyyy")));
                     }
                     else if (content == "1")
                     {
         
-                        Vs.Remove(String.Format("StartDate >= # {0} # and StartDate<=# {1}# Or ", DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
+                        Vs.Remove(String.Format("{0} >= # {1} # and {0} <=# {2}# Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
                     }
                     else if (content == "3")
                     {
              
-                        Vs.Remove(String.Format("StartDate = # {0}#  Or ", DateTime.Parse(value).ToString("MM/dd/yyyy")));
+                        Vs.Remove(String.Format("{0}  = # {1}#  Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("MM/dd/yyyy")));
                     }
 
-                    //  RaisePropertyChanged("DataView");
+                    Ok();
 
                 });
             }
@@ -291,6 +314,44 @@ namespace TaskDataGrid.ViewModel
 
                     //  RaisePropertyChanged("DataView");
 
+                });
+            }
+        }
+        public RelayCommand SortDesk
+        {
+            get
+            {
+                return new RelayCommand(()=>
+                {
+                    DataView.Sort = ColumnHeader_Property+ " DESC";
+                    RaisePropertyChanged("DataView");
+                });
+            }
+        } 
+        public RelayCommand SortAsc
+        {
+            get
+            {
+                return new RelayCommand(()=>
+                {
+                    DataView.Sort = ColumnHeader_Property+ " ASC";
+                    RaisePropertyChanged("DataView");
+                });
+            }
+        } 
+        public RelayCommand SortDel
+        {
+            get
+            {
+                return new RelayCommand(()=>
+                {
+                    for (int i = 0; i < filters[ColumnHeader_Property].Count; i++)
+                    {
+                        filters[ColumnHeader_Property][i].IsChecked = true;
+                    }
+                 
+                    DataView.RowFilter = "";
+                    RaisePropertyChanged("DataView");
                 });
             }
         }

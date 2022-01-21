@@ -22,6 +22,7 @@ namespace TaskDataGrid.ViewModel
         private List<int> listColumnHeader_PropertyDateTime = new List<int>();
         public Visibility lbFilterVisibility { get; set; } = Visibility.Visible;
         public Visibility TreeVisibility { get; set; } = Visibility.Visible;
+        public Visibility ButtonVisibility { get; set; } = Visibility.Visible;
         public bool IsOpen { get; set; } = false;
         Dictionary<string, ObservableCollection<FilterObj>> filters=new Dictionary<string, ObservableCollection<FilterObj>>();
         Dictionary<string, ObservableCollection<IHierarchy<DateTime>>> filtersDate = new Dictionary<string, ObservableCollection<IHierarchy<DateTime>>>();
@@ -86,6 +87,7 @@ namespace TaskDataGrid.ViewModel
                         }
                         _dates = filtersDate[ColumnHeader_Property];
                         lbFilterVisibility = Visibility.Collapsed;
+                        ButtonVisibility = Visibility.Collapsed;
                         RaisePropertyChanged("Dates");
                     }
                     if (listColumnHeader_PropertyDateTime.Contains(DataTable.Columns[ColumnHeader_Property].Ordinal))
@@ -103,6 +105,7 @@ namespace TaskDataGrid.ViewModel
                         }
                         _dates = filtersDate[ColumnHeader_Property];
                         lbFilterVisibility = Visibility.Collapsed;
+                        ButtonVisibility = Visibility.Collapsed;
 
                         RaisePropertyChanged("Dates");
                     }
@@ -130,11 +133,14 @@ namespace TaskDataGrid.ViewModel
 
                         ListFilterContent = filters[ColumnHeader_Property];
                         TreeVisibility = Visibility.Collapsed;
+                        ButtonVisibility = Visibility.Visible;
+
                         RaisePropertyChanged("ListFilterContent");
                     }
 
                     RaisePropertyChanged("lbFilterVisibility");
                     RaisePropertyChanged("TreeVisibility");
+                    RaisePropertyChanged("ButtonVisibility");
 
 
 
@@ -346,10 +352,14 @@ namespace TaskDataGrid.ViewModel
             {
                 return new RelayCommand(()=>
                 {
-                    for (int i = 0; i < filters[ColumnHeader_Property].Count; i++)
+                    if (filters.ContainsKey(ColumnHeader_Property))
                     {
-                        filters[ColumnHeader_Property][i].IsChecked = true;
+                        for (int i = 0; i < filters[ColumnHeader_Property].Count; i++)
+                        {
+                            filters[ColumnHeader_Property][i].IsChecked = true;
+                        }
                     }
+                   
                  
                     DataView.RowFilter = "";
                     RaisePropertyChanged("DataView");

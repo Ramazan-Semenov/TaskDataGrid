@@ -238,7 +238,7 @@
                         </HierarchicalDataTemplate>
                         </TreeView.ItemTemplate>
                     </TreeView>
-                    <Button  Command="{Binding StartSorted}"  x:Name="ok" >ok</Button>
+                    <Button Visibility="{Binding ButtonVisibility}"  Command="{Binding StartSorted}"  x:Name="ok" >ok</Button>
 
                 </StackPanel>
 

@@ -14,8 +14,34 @@
              xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <Geometry x:Key="Filter">
+        <!--  MAGNIFIER ICON  -->
+        <Geometry x:Key="Magnifier">
+            M9.6 8.5H9L8.7 8.2C9.6 7.4 10 6.2 10 5C10 2.2 7.8 0 5 0S0 2.2 0 5S2.2 10 5 10C6.2 10 7.4 9.6 8.2 8.7L8.5
+        9V9.6L12.3 13.5L13.5 12.3L9.6 8.5ZM5 8.5C3.1 8.5 1.5 6.9 1.5 5S3.1 1.5 5 1.5S8.5 3.1 8.5 5S6.9 8.5 5 8.5Z
+        </Geometry>
 
+        <!--  DELETE FILTER ICON  -->
+        <Geometry x:Key="FilterDelete">
+            M11.1 11.4L8.5 8.9L9.8 7.6L12.3 10.1L14.8 7.6L16.1 8.9L13.6 11.4L16.1 13.9L14.8 15.2L12.3 12.6L9.8 15.2L8.5 13.9ZM0 0H13L13 2L8 6V14L5 11V6L0 2Z
+        </Geometry>
+
+        <!--  BOX CHECKED ICON  -->
+        <Geometry x:Key="FilterChecked">
+            M 125 125 L 0 125 V 0 H 125 Z M 1 124 H 124 V 1 H 1 Z M 20 68 L 29 57 L 56 80 L 98 25 L 110 35 L 59 101 Z
+        </Geometry>
+
+        <!--  GRIPSIZE ICON  -->
+        <Geometry x:Key="GripSizeIcon">
+            M0 9L2 9M4 9L6 9M8 9L10 9M1 8L1 10M5 8L5 10M9 8L9 10M4 5L6 5M8 5L10 5M5 4L5 6M9 4L9 6M8 1L10 1M9 0L9 2
+        </Geometry>
+
+        <!--  FILTER SET ICON  -->
+        <Geometry x:Key="FilterSet">
+            M 0 17 H 13 L 7 25 Z M 8 0 H 28 L 28 2 L 20 8 L 20 18 H 16 L 16 8 L 8 2 Z
+        </Geometry>
+
+        <!--  FILTER BUTTON ICON  -->
+        <Geometry x:Key="Filter">
             M 7 10 L 12 15 L 17 10 H 7 Z
         </Geometry>
         <conv:DateTimeToDateYearsConverter x:Key="myDateConverterYears"></conv:DateTimeToDateYearsConverter>
@@ -74,8 +100,9 @@
             </DataGrid.Resources>
         </DataGrid>
 
-        <Popup  x:Name="popExcel"  Height="350" Width="300" Placement="Bottom"  AllowsTransparency="True"  StaysOpen="False">
-            <Grid Background="White"  Opacity="0.98">
+        <Popup  x:Name="popExcel"  Height="350" Width="300"  Placement="Bottom"  AllowsTransparency="True"  StaysOpen="False">
+            
+            <Grid   Background="White"  Opacity="0.98">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="25"/>
                     <ColumnDefinition Width="92*"/>
@@ -203,7 +230,21 @@
                     </ListBox>
                     <TreeView  Visibility="{Binding TreeVisibility}"  x:Name="Tree" ItemsSource="{Binding Dates}">
                         <TreeView.ItemTemplate>
-                        <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                            <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                                <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Value}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Checked">
+                                            <cmd:EventToCommand Command="{Binding DataContext.Date_Checked, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}"
+                                                     PassEventArgsToCommand="True" />
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="Unchecked">
+                                            <cmd:EventToCommand Command="{Binding DataContext.Date_UnChecked, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}"
+                                                     PassEventArgsToCommand="True" />
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </CheckBox>
+                            </HierarchicalDataTemplate>
+                        <!--<HierarchicalDataTemplate ItemsSource="{Binding Children}">
                             <CheckBox  x:Name="Date" >
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="Checked">
@@ -235,10 +276,28 @@
 
                                 </DataTrigger>
                             </HierarchicalDataTemplate.Triggers>
-                        </HierarchicalDataTemplate>
+                        </HierarchicalDataTemplate>-->
                         </TreeView.ItemTemplate>
-                    </TreeView>
-                    <Button Visibility="{Binding ButtonVisibility}"  Command="{Binding StartSorted}"  x:Name="ok" >ok</Button>
+                    </TreeView><!--Visibility="{Binding ButtonVisibility}"-->
+                    <UniformGrid
+                            
+                            Background="Transparent"
+>
+                        <Button
+                                Width="100"
+                                Margin="0"
+                                HorizontalAlignment="Left"
+                                Command="{Binding StartSorted}"
+                                Content="OK" />
+
+                        <!--<Button
+                                Width="100"
+                                Margin="6,0,0,0"
+                                HorizontalAlignment="Right"
+                                Command="{x:Static control:FilterDataGrid.CancelFilter}"
+                                Content="{Binding Translate.Cancel}" />-->
+                    </UniformGrid>
+                    <!--<Button   Command="{Binding StartSorted}"  x:Name="ok" >ok</Button>-->
 
                 </StackPanel>
 

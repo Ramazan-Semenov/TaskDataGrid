@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -72,30 +73,30 @@ namespace TaskDataGrid.ViewModel
                     TreeVisibility = Visibility.Visible;
                     Dates = new ObservableCollection<IHierarchy<DateTime>>();
                     DateTimes = new List<DateTime>();
-                    if (DataTable.Columns[ColumnHeader_Property].DataType == typeof(DateTime))
-                    {
-                        _dates = new ObservableCollection<IHierarchy<DateTime>>();
+                    //if (DataTable.Columns[ColumnHeader_Property].DataType == typeof(DateTime))
+                    //{
+                    //    _dates = new ObservableCollection<IHierarchy<DateTime>>();
 
-                        foreach (DataRow item in DataTable.Rows)
-                        {
-                            DateTimes.Add(Convert.ToDateTime(item[ColumnHeader_Property]));
-                        }
-                        _dates = BuildDates(DateTimes);
-                        if (!filtersDate.ContainsKey(ColumnHeader_Property))
-                        {
-                            filtersDate.Add(ColumnHeader_Property, _dates);
-                        }
-                        _dates = filtersDate[ColumnHeader_Property];
-                        lbFilterVisibility = Visibility.Collapsed;
-                        ButtonVisibility = Visibility.Collapsed;
-                        RaisePropertyChanged("Dates");
-                    }
+                    //    foreach (DataRow item in DataTable.Rows)
+                    //    {
+                    //        DateTimes.Add(Convert.ToDateTime(item[ColumnHeader_Property]));
+                    //    }
+                    //    _dates = BuildDates(DateTimes);
+                    //    if (!filtersDate.ContainsKey(ColumnHeader_Property))
+                    //    {
+                    //        filtersDate.Add(ColumnHeader_Property, _dates);
+                    //    }
+                    //    _dates = filtersDate[ColumnHeader_Property];
+                    //    lbFilterVisibility = Visibility.Collapsed;
+                    //    ButtonVisibility = Visibility.Collapsed;
+                    //    RaisePropertyChanged("Dates");
+                    //}
                     if (listColumnHeader_PropertyDateTime.Contains(DataTable.Columns[ColumnHeader_Property].Ordinal))
                     {
                         _dates = new ObservableCollection<IHierarchy<DateTime>>();
                         foreach (DataRow item in DataTable.Rows)
                         {
-                            DateTimes.Add(Convert.ToDateTime(item[ColumnHeader_Property]));
+                            DateTimes.Add(Convert.ToDateTime(item[ColumnHeader_Property]).Date);
                            // MessageBox.Show(ColumnHeader_Property.ToString());
                         }
                         _dates = BuildDates(DateTimes);
@@ -170,8 +171,84 @@ namespace TaskDataGrid.ViewModel
 
                     DataView.RowFilter = filterstring;
                     RaisePropertyChanged("DataView");
+                    string newfiltdate="";
+                    foreach (var item in _dates)
+                    {
+                        //MessageBox.Show(DateTime.Parse(item.Value.ToString()).ToString());
+                        if (item.IsChecked==false)
+                        {
+                            int colday = DateTime.DaysInMonth(DateTime.Parse(item.Value.ToString()).Year, DateTime.Parse(item.Value.ToString()).Month);
+                                Vs.Add(String.Format("{0} < # {1} # or {0} > # {2}# and ", ColumnHeader_Property, DateTime.Parse(item.Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(item.Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
+                            //      newfiltdate += String.Format("{0} >= # {1} # and {0} <=# {2}# Or ", ColumnHeader_Property, DateTime.Parse(item.Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(item.Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy"));
 
-                  //  Ok();
+                        }
+                        //Debug.WriteLine(item.Level);
+                        foreach (var item2 in item.Children)
+                        {
+                            //Debug.WriteLine(item2.Level);
+                            if (item2.IsChecked==false)
+                            {
+                                int colday = DateTime.DaysInMonth(DateTime.Parse(item2.Value.ToString()).Year, DateTime.Parse(item2.Value.ToString()).Month);
+                                Vs.Remove(String.Format("{0} > # {1} # or {0} > # {2}# and ", ColumnHeader_Property, DateTime.Parse(item.Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(item2.Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
+                                Vs.Add(String.Format("{0}  > # {1} # or {0} > #{2}#  and ", ColumnHeader_Property, DateTime.Parse(item2.Value.ToString()).ToString("MM/01/yyyy"), DateTime.Parse(item2.Value.ToString()).ToString("MM/" + colday.ToString() + "/yyyy")));
+
+                                //    newfiltdate += String.Format("{0}  >= # {1} # and {0} <=#{2}#  Or ", ColumnHeader_Property, DateTime.Parse(item2.Value.ToString()).ToString("MM/01/yyyy"), DateTime.Parse(item2.Value.ToString()).ToString("MM/" + colday.ToString() + "/yyyy"));
+                            }
+
+                            foreach (var item3 in item2.Children)
+                            {
+                                if (item3.IsChecked == false)
+                                {
+                                    int colday = DateTime.DaysInMonth(DateTime.Parse(item2.Value.ToString()).Year, DateTime.Parse(item2.Value.ToString()).Month);
+
+                                    Vs.Remove(String.Format("{0} > # {1} # or {0} > # {2}# and ", ColumnHeader_Property, DateTime.Parse(item.Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(item.Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
+                                  var g=  Vs.Remove(String.Format("{0}  > # {1} # or {0} > #{2}#  and ", ColumnHeader_Property, DateTime.Parse(item2.Value.ToString()).ToString("MM/01/yyyy"), DateTime.Parse(item2.Value.ToString()).ToString("MM/" + colday.ToString() + "/yyyy")));
+                                    Vs.Add(String.Format("{0}  = # {1}#  and ", ColumnHeader_Property, DateTime.Parse(item2.Value.ToString()).ToString("MM/dd/yyyy")));
+
+                                   
+
+                                }
+
+                            }
+                        }
+                    }
+                    string resultfiltertext = "";
+                    foreach (var item in Vs)
+                    {
+                        v += item;
+                    }
+
+                    int ii = v.LastIndexOf("and");
+                    if (ii >= 0)
+                    {
+                        v = v.Substring(0, ii) + v.Substring(ii + "and".Length);
+                    }
+                   
+                    //MessageBox.Show(filterstring);
+                    if ((filterstring.Length>0)&(v.Length>0))
+                    {
+                        resultfiltertext = filterstring + " And ( " + v+" )";
+                    }
+                    else if (filterstring.Length>0&&v.Length==0)
+                    {
+                        resultfiltertext = filterstring;
+                    }
+                    else
+                    {
+                        resultfiltertext = v;
+                    }
+                   MessageBox.Show(resultfiltertext);
+                    DataView.RowFilter = resultfiltertext;
+                    RaisePropertyChanged("DataView");
+
+                    newfiltdate = "";
+                    resultfiltertext = "";
+                    filterstring = "";
+                    v = "";
+                 //   Vs.Clear();
+                   // MessageBox.Show(filterstring + " Or " + newfiltdate);
+                   //  DataView.RowFilter = filterstring + " Or " + newfiltdate;
+                    //  Ok();
                 });  
  
 
@@ -231,68 +308,84 @@ namespace TaskDataGrid.ViewModel
         string v = "";
         List<string> Vs = new List<string>();
 
-        public RelayCommand<DateHierarchy> Date_Checked
-        {
-            get
-            {
-                return new RelayCommand<DateHierarchy>((DateHierarchy sender)=> {
-                    string content = sender.Level.ToString();
-                    string value = sender.Value.ToString();
-                    int colday = DateTime.DaysInMonth(DateTime.Parse(value).Year, DateTime.Parse(value).Month);
-
-                    if (content == "2")
-                    {
-
-                        Vs.Remove(String.Format("{0} >= # {1} # and {0} <=# {2}# Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
-                        Vs.Add(String.Format("{0}  >= # {1} # and {0} <=#{2}#  Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("MM/01/yyyy"), DateTime.Parse(value).ToString("MM/" + colday.ToString() + "/yyyy")));
-                    }
-                    else if (content == "1")
-                    {
-                       
-                        Vs.Add(String.Format("{0} >= # {1} # and {0} <=# {2}# Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
-                    }
-                    else if (content == "3")
-                    {
-                        //v += String.Format("StartDate = # {0}# Or ", DateTime.Parse(value).ToString("MM/dd/yyyy"));
-                        Vs.Remove(String.Format("{0}  >= # {1} # and {0} <=# {2}# Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
-                        Vs.Remove(String.Format("{0}  >= # {1} # and {0} <=#{2}#  Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("MM/01/yyyy"), DateTime.Parse(value).ToString("MM/" + colday.ToString() + "/yyyy")));
-
-                        Vs.Add(String.Format("{0}  = # {1}#  Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("MM/dd/yyyy")));
-                    }
-
-                    Ok();
-                });
-            }
-        } 
         public RelayCommand<DateHierarchy> Date_UnChecked
         {
             get
             {
                 return new RelayCommand<DateHierarchy>((DateHierarchy sender)=> {
+                    //string content = sender.Level.ToString();
+                    //string value = sender.Value.ToString();
+                    //int colday = DateTime.DaysInMonth(DateTime.Parse(value).Year, DateTime.Parse(value).Month);
+                    //foreach (var item in Dates)
+                    //{
+                    //    foreach (var item2 in item.Children)
+                    //    {
+                    //        if (item2.IsChecked == true)
+                    //        {
+                    //            Debug.WriteLine(item2.Value + " | " + item2.IsChecked);
+
+                    //        }
+                    //    }
+                       
+                    //}
+                    //if (content == "2")
+                    //{
+
+                    //    Vs.Remove(String.Format("{0} >= # {1} # and {0} <=# {2}# Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
+                    //    Vs.Add(String.Format("{0}  >= # {1} # and {0} <=#{2}#  Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("MM/01/yyyy"), DateTime.Parse(value).ToString("MM/" + colday.ToString() + "/yyyy")));
+                    //}
+                    //else if (content == "1")
+                    //{
+                       
+                    //    Vs.Add(String.Format("{0} >= # {1} # and {0} <=# {2}# Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
+                    //}
+                    //else if (content == "3")
+                    //{
+                    //    //v += String.Format("StartDate = # {0}# Or ", DateTime.Parse(value).ToString("MM/dd/yyyy"));
+                    //    Vs.Remove(String.Format("{0}  >= # {1} # and {0} <=# {2}# Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
+                    //    Vs.Remove(String.Format("{0}  >= # {1} # and {0} <=#{2}#  Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("MM/01/yyyy"), DateTime.Parse(value).ToString("MM/" + colday.ToString() + "/yyyy")));
+
+                    //    Vs.Add(String.Format("{0}  = # {1}#  Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("MM/dd/yyyy")));
+                    //}
+
+                    //Ok();
+                });
+            }
+        } 
+        public RelayCommand<DateHierarchy> Date_Checked
+        {
+            get
+            {
+                return new RelayCommand<DateHierarchy>((DateHierarchy sender)=> {
 
 
                     string content = sender.Level.ToString();
+                   // MessageBox.Show(content);
                     string value = sender.Value.ToString();
                     int colday = DateTime.DaysInMonth(DateTime.Parse(value).Year, DateTime.Parse(value).Month);
-
+                    foreach (var item in _dates)
+                    {
+                        Debug.WriteLine(item.Value + " | " + item.IsChecked);
+                    }
                     if (content == "2")
                     {
-            
-                        Vs.Remove(String.Format("{0}  >= # {1} # and {0} <=#{2}#  Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
+
+                        Vs.Remove(String.Format("{0} > # {1} # or {0} > # {2}# and ", ColumnHeader_Property, DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
                         //Vs.Add(String.Format("StartDate >= # {0} # and StartDate<=#{1}#  Or ", DateTime.Parse(value).ToString("MM/01/yyyy"), DateTime.Parse(value).ToString("MM/" + colday.ToString() + "/yyyy")));
                     }
                     else if (content == "1")
                     {
-        
-                        Vs.Remove(String.Format("{0} >= # {1} # and {0} <=# {2}# Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
+
+                       var g= Vs.Remove(String.Format("{0} < # {1} # or {0} > # {2}# and ", ColumnHeader_Property, DateTime.Parse(value).ToString("01/01/yyyy"), DateTime.Parse(value).ToString("12/" + colday.ToString() + "/yyyy")));
+                        Debug.WriteLine(g);
                     }
                     else if (content == "3")
                     {
-             
+
                         Vs.Remove(String.Format("{0}  = # {1}#  Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("MM/dd/yyyy")));
                     }
 
-                    Ok();
+                    //Ok();
 
                 });
             }
@@ -375,33 +468,72 @@ namespace TaskDataGrid.ViewModel
 
         private ObservableCollection<Model.IHierarchy<DateTime>> BuildDates(List<DateTime> dates)
         {
-            var d = from date in dates
-                    group date by date.Year into year
-                    select new DateHierarchy
+            List<DateHierarchy> list = new List<DateHierarchy>();
+
+            DateHierarchy year = new DateHierarchy();
+            DateHierarchy Month = new DateHierarchy();
+            DateHierarchy Day = new DateHierarchy();
+            foreach (var item in dates.GroupBy(x=>x.Year))
+            {
+                year = new DateHierarchy();
+
+                year.Value = new DateTime(item.Key, 1, 1);
+                year.Level = 1;
+                foreach (var item2 in  item.GroupBy(x=>x.Month))
+                {
+
+                    Month = new DateHierarchy();
+                    Month.Value = new DateTime(item.Key, item2.Key, 1);
+
+
+                    Month.Level = 2;
+                    foreach (var item3 in item2.GroupBy(x=>x.Day))
                     {
-                        Level = 1,
-                        IsChecked = false,
+                        Day = new DateHierarchy();
 
-                        Value = new DateTime(year.Key, 1, 1),
-                        Children = from date in year
-                                   group date by date.Month into month
-                                   select new DateHierarchy
-                                   {
-                                       Level = 2,
-                                       IsChecked = false,
-                                       Value = new DateTime(year.Key, month.Key, 1),
-                                       Children = from day in month
-                                                  select new DateHierarchy
-                                                  {
-                                                      Level = 3,
-                                                      Value = day,
-                                                      IsChecked = false,
+                        Day.Level = 3;
+                        Day.Value = item3.Key;
+                        Month.Children.Add(Day);
+                        //Console.WriteLine(item3.Key);
+                    }
+                  
+               
 
-                                                      Children = null
-                                                  }
-                                   }
-                    };
-            return new ObservableCollection<IHierarchy<DateTime>>(d);
+                    year.Children.Add(Month);
+
+                }
+                //hierarchy.Children.Add(hierarchy1);
+                list.Add(year);
+            }
+
+
+            //var d = from date in dates
+            //        group date by date.Year into year
+            //        select new DateHierarchy
+            //        {
+            //            Level = 1,
+            //            IsChecked = false,
+
+            //            Value = new DateTime(year.Key, 1, 1),
+            //            Children = from date in year
+            //                       group date by date.Month into month
+            //                       select new DateHierarchy
+            //                       {
+            //                           Level = 2,
+            //                           IsChecked = false,
+            //                           Value = new DateTime(year.Key, month.Key, 1),
+            //                           Children = from day in month
+            //                                      select new DateHierarchy
+            //                                      {
+            //                                          Level = 3,
+            //                                          Value = day,
+            //                                          IsChecked = false,
+
+            //                                          Children = null
+            //                                      }
+            //                       }
+            //        };
+            return new ObservableCollection<IHierarchy<DateTime>>(list);
         }
     }
     

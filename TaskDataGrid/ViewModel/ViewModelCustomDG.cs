@@ -203,8 +203,8 @@ namespace TaskDataGrid.ViewModel
 
                                     Vs.Remove(String.Format("{0} > # {1} # or {0} > # {2}# and ", ColumnHeader_Property, DateTime.Parse(item.Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(item.Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
                                   var g=  Vs.Remove(String.Format("{0}  > # {1} # or {0} > #{2}#  and ", ColumnHeader_Property, DateTime.Parse(item2.Value.ToString()).ToString("MM/01/yyyy"), DateTime.Parse(item2.Value.ToString()).ToString("MM/" + colday.ToString() + "/yyyy")));
-                                    Vs.Add(String.Format("{0}  = # {1}#  and ", ColumnHeader_Property, DateTime.Parse(item2.Value.ToString()).ToString("MM/dd/yyyy")));
-
+                                    Vs.Add(String.Format("{0}  = # {1}#  and ", ColumnHeader_Property, DateTime.Parse(item3.Value.ToString()).ToString("MM/dd/yyyy")));
+                                    Console.WriteLine(String.Format("{0}  = # {1}#  and ", ColumnHeader_Property, DateTime.Parse(item3.Value.ToString()).ToString("MM/dd/yyyy")));
                                    
 
                                 }
@@ -358,10 +358,10 @@ namespace TaskDataGrid.ViewModel
             {
                 return new RelayCommand<DateHierarchy>((DateHierarchy sender)=> {
 
-
                     string content = sender.Level.ToString();
                    // MessageBox.Show(content);
                     string value = sender.Value.ToString();
+
                     int colday = DateTime.DaysInMonth(DateTime.Parse(value).Year, DateTime.Parse(value).Month);
                     foreach (var item in _dates)
                     {
@@ -382,7 +382,7 @@ namespace TaskDataGrid.ViewModel
                     else if (content == "3")
                     {
 
-                        Vs.Remove(String.Format("{0}  = # {1}#  Or ", ColumnHeader_Property, DateTime.Parse(value).ToString("MM/dd/yyyy")));
+                        Vs.Remove(String.Format("{0}  = # {1}#  and ", ColumnHeader_Property, DateTime.Parse(value).ToString("MM/dd/yyyy")));
                     }
 
                     //Ok();
@@ -492,9 +492,9 @@ namespace TaskDataGrid.ViewModel
                         Day = new DateHierarchy();
 
                         Day.Level = 3;
-                        Day.Value = item3.Key;
+                        Day.Value =  new DateTime(item.Key, item2.Key, item3.Key);
                         Month.Children.Add(Day);
-                        //Console.WriteLine(item3.Key);
+                        Console.WriteLine(new DateTime(item.Key, item2.Key, item3.Key).ToString());
                     }
                   
                

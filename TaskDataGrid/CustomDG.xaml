@@ -228,10 +228,19 @@
                         </ListBox.ItemTemplate>
 
                     </ListBox>
+                    <!--Content="{Binding Value, Converter={StaticResource myDateConverterYears}-->
                     <TreeView  Visibility="{Binding TreeVisibility}"  x:Name="Tree" ItemsSource="{Binding Dates}">
                         <TreeView.ItemTemplate>
                             <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                                <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Value}">
+                                <CheckBox x:Name="T"  IsChecked="{Binding IsChecked}" >
+
+                                    <CheckBox.Content >
+                                        <MultiBinding Converter="{StaticResource myDateConverterYears}">
+                                            <Binding Path="Level" />
+
+                                            <Binding Path="Value"/>
+                                        </MultiBinding>
+                                    </CheckBox.Content>
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="Checked">
                                             <cmd:EventToCommand Command="{Binding DataContext.Date_Checked, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}"

@@ -5,6 +5,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:col="clr-namespace:System.Collections;assembly=mscorlib"
 	xmlns:control="http://filterdatagrid.control.com/2021"
+            
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:GalaSoft_MvvmLight_Command="http://www.galasoft.ch/mvvmlight" 
               xmlns:vm="clr-namespace:TaskDataGrid" xmlns:viewmodel="clr-namespace:TaskDataGrid.ViewModel"
@@ -14,6 +15,16 @@
              xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
+        <conv:TreeViewLineConverter x:Key="LineConverter"/>
+        <conv:DateTimeToDateYearsConverter x:Key="myDateConverterYears"></conv:DateTimeToDateYearsConverter>
+        <conv:DateTimeToDateMonthConverter x:Key="myDateConverterYearsMonth"></conv:DateTimeToDateMonthConverter>
+        <conv:DateTimeToDateDayConverter x:Key="myDateConverterYearsDay"></conv:DateTimeToDateDayConverter>
+        <SolidColorBrush x:Key="GlyphBrush" Color="#444" />
+
+        <!--=================================================================
+      TreeViewItem
+  ==================================================================-->
+        
         <!--  MAGNIFIER ICON  -->
         <Geometry x:Key="Magnifier">
             M9.6 8.5H9L8.7 8.2C9.6 7.4 10 6.2 10 5C10 2.2 7.8 0 5 0S0 2.2 0 5S2.2 10 5 10C6.2 10 7.4 9.6 8.2 8.7L8.5
@@ -44,9 +55,7 @@
         <Geometry x:Key="Filter">
             M 7 10 L 12 15 L 17 10 H 7 Z
         </Geometry>
-        <conv:DateTimeToDateYearsConverter x:Key="myDateConverterYears"></conv:DateTimeToDateYearsConverter>
-        <conv:DateTimeToDateMonthConverter x:Key="myDateConverterYearsMonth"></conv:DateTimeToDateMonthConverter>
-        <conv:DateTimeToDateDayConverter x:Key="myDateConverterYearsDay"></conv:DateTimeToDateDayConverter>
+       
         <!--<conv:DateTimeToDateConverter x:Key="myDateConverter" />-->
     </UserControl.Resources>
 
@@ -228,12 +237,12 @@
                         </ListBox.ItemTemplate>
 
                     </ListBox>
+                    <CheckBox Content="Выделить все"  IsChecked="{Binding Selected}"></CheckBox>
                     <!--Content="{Binding Value, Converter={StaticResource myDateConverterYears}-->
-                    <TreeView  Visibility="{Binding TreeVisibility}"  x:Name="Tree" ItemsSource="{Binding Dates}">
+                    <TreeView  Visibility="{Binding TreeVisibility}"  x:Name="Tree" ItemsSource="{Binding Dates, Mode=TwoWay}">
                         <TreeView.ItemTemplate>
-                            <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                                <CheckBox x:Name="T"  IsChecked="{Binding IsChecked}" >
-
+                            <HierarchicalDataTemplate   ItemsSource="{Binding Children, Mode=TwoWay}">
+                                <CheckBox IsThreeState="{Binding IsThreeState}" x:Name="T"  IsChecked="{Binding IsChecked}" >
                                     <CheckBox.Content >
                                         <MultiBinding Converter="{StaticResource myDateConverterYears}">
                                             <Binding Path="Level" />
@@ -253,39 +262,7 @@
                                     </i:Interaction.Triggers>
                                 </CheckBox>
                             </HierarchicalDataTemplate>
-                        <!--<HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                            <CheckBox  x:Name="Date" >
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="Checked">
-                                        <cmd:EventToCommand Command="{Binding DataContext.Date_Checked, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}"
-                                                     PassEventArgsToCommand="True" />
-                                    </i:EventTrigger>
-                                    <i:EventTrigger EventName="Unchecked">
-                                        <cmd:EventToCommand Command="{Binding DataContext.Date_UnChecked, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}"
-                                                     PassEventArgsToCommand="True" />
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
-                            </CheckBox>
-                            <HierarchicalDataTemplate.Triggers>
-                                <DataTrigger Binding="{Binding Level}" Value="1">
-                                    <Setter TargetName="Date" Property="Content" Value="{Binding Value, Converter={StaticResource myDateConverterYears}}" />
-                                    <Setter TargetName="Date" Property="Tag" Value="1" />
-                                    <Setter TargetName="Date" Property="IsChecked" Value="{Binding IsChecked}"></Setter>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding Level}" Value="2">
-                                    <Setter TargetName="Date" Property="Content" Value="{Binding Value,Converter={StaticResource myDateConverterYearsMonth}}" />
-                                    <Setter TargetName="Date" Property="Tag" Value="2" />
-                                    <Setter TargetName="Date" Property="IsChecked" Value="{Binding IsChecked}"></Setter>
-
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding Level}" Value="3">
-                                    <Setter TargetName="Date" Property="Content" Value="{Binding Value,Converter={StaticResource myDateConverterYearsDay}}" />
-                                    <Setter TargetName="Date" Property="Tag" Value="3" />
-                                    <Setter TargetName="Date" Property="IsChecked" Value="{Binding IsChecked}"></Setter>
-
-                                </DataTrigger>
-                            </HierarchicalDataTemplate.Triggers>
-                        </HierarchicalDataTemplate>-->
+                       
                         </TreeView.ItemTemplate>
                     </TreeView><!--Visibility="{Binding ButtonVisibility}"-->
                     <UniformGrid
@@ -313,171 +290,7 @@
             </Grid>
         </Popup>
 
-        <!--<Popup  x:Name="popExcel" Width="200" Height="auto"  Placement="Bottom"  StaysOpen="False" PopupAnimation="Scroll" AllowsTransparency="True" >
-            <Border BorderThickness="1" BorderBrush="Black">
-                <Grid Background="#FFF9F6F6">
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"></RowDefinition>
-                        <RowDefinition></RowDefinition>
-                        <RowDefinition Height="Auto"></RowDefinition>
-                        <RowDefinition Height="Auto"></RowDefinition>
-                        <RowDefinition/>
-
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="4*">
-                        </ColumnDefinition>
-                        <ColumnDefinition Width="29*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Row="0" Grid.Column="1">
-                        <Grid>
-                            <Grid.ColumnDefinitions >
-                                <ColumnDefinition>
-                                    <ColumnDefinition.Width>Auto</ColumnDefinition.Width>
-                                </ColumnDefinition>
-                                <ColumnDefinition>
-                                    <ColumnDefinition.Width>Auto</ColumnDefinition.Width>
-                                </ColumnDefinition>
-                            </Grid.ColumnDefinitions>
-                            <Label HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" x:Name="Lable" Height="33" Margin="41,0,0,0" FontFamily="Times New Roman" FontSize="14" Foreground="#FF6A6868"  >
-
-                            </Label>
-
-                        </Grid>
-
-                    </StackPanel>
-
-                    <StackPanel Grid.Row="1" Grid.Column="1">
-                        <Grid>
-                            <Grid.ColumnDefinitions >
-                                <ColumnDefinition>
-                                    <ColumnDefinition.Width>Auto</ColumnDefinition.Width>
-                                </ColumnDefinition>
-                                <ColumnDefinition>
-                                    <ColumnDefinition.Width>Auto</ColumnDefinition.Width>
-                                </ColumnDefinition>
-                            </Grid.ColumnDefinitions>
-                            <TextBox x:Name="FilterTextBox"  Margin="10 0 0 0" Width="140" RenderTransformOrigin="0.779,0.556">
-                                <TextBox.Style>
-                                    <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
-                                        <Style.Resources>
-                                            <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
-                                                <VisualBrush.Visual>
-                                                    <Label Content="Search" Foreground="LightGray" />
-
-                                                </VisualBrush.Visual>
-                                            </VisualBrush>
-                                        </Style.Resources>
-                                        <Style.Triggers>
-                                            <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
-                                                <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
-                                            </Trigger>
-                                            <Trigger Property="Text" Value="{x:Null}">
-                                                <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
-                                            </Trigger>
-                                            <Trigger Property="IsKeyboardFocused" Value="True">
-                                                <Setter Property="Background" Value="White" />
-                                            </Trigger>
-                                        </Style.Triggers>
-
-                                    </Style>
-                                </TextBox.Style>
-
-                            </TextBox>
-
-                        </Grid>
-                    </StackPanel>
-                    <StackPanel Grid.Row="2"  Grid.Column="1">
-                      
-
-
-                        <TextBox>От</TextBox>
-                        <TextBox>До</TextBox>
-                    </StackPanel>
-                    <StackPanel Grid.Row="3" Grid.Column="1">
-                        <ListBox 
-                            ItemsSource="{Binding ListFilterContent}"
-                                     VirtualizingStackPanel.CacheLengthUnit="Page"
-            VirtualizingPanel.IsVirtualizing="True" 
-            VirtualizingStackPanel.VirtualizationMode="Recycling"
-                            MaxHeight="300" 
-                            MinHeight="200" ScrollViewer.VerticalScrollBarVisibility="Visible"
-                            BorderBrush="Black" BorderThickness="1" Background="White" 
-                            Margin="10" x:Name="lbFilter" Visibility="{Binding lbFilterVisibility}" >
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <CheckBox BorderBrush="Transparent" IsChecked="{Binding IsChecked}"   Content="{Binding Title}"  Foreground="#FF171111" >
-
-                                        <i:Interaction.Triggers>
-                                            <i:EventTrigger EventName="Checked">
-                                                <cmd:EventToCommand Command="{Binding DataContext.String_Checked, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}"
-                                                     PassEventArgsToCommand="True" />
-                                            </i:EventTrigger>
-                                            <i:EventTrigger EventName="Unchecked">
-                                                <cmd:EventToCommand Command="{Binding DataContext.String_UnChecked, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}"
-                                                     PassEventArgsToCommand="True" />
-                                            </i:EventTrigger>
-                                        </i:Interaction.Triggers>
-
-                                    </CheckBox>
-
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-
-                        </ListBox>
-
-                        <TreeView  Visibility="{Binding TreeVisibility}"  x:Name="Tree" ItemsSource="{Binding Dates}"
-                            <TreeView.ItemTemplate>
-                                <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                                <CheckBox  x:Name="Date" >
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="Checked">
-                                            <cmd:EventToCommand Command="{Binding DataContext.Date_Checked, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}"
-                                                     PassEventArgsToCommand="True" />
-                                        </i:EventTrigger>
-                                        <i:EventTrigger EventName="Unchecked">
-                                            <cmd:EventToCommand Command="{Binding DataContext.Date_UnChecked, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}"
-                                                     PassEventArgsToCommand="True" />
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                </CheckBox>
-                                <HierarchicalDataTemplate.Triggers>
-                                        <DataTrigger Binding="{Binding Level}" Value="1">
-                                            <Setter TargetName="Date" Property="Content" Value="{Binding Value, Converter={StaticResource myDateConverterYears}}" />
-                                            <Setter TargetName="Date" Property="Tag" Value="1" />
-                                            <Setter TargetName="Date" Property="IsChecked" Value="{Binding IsChecked}"></Setter>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding Level}" Value="2">
-                                            <Setter TargetName="Date" Property="Content" Value="{Binding Value,Converter={StaticResource myDateConverterYearsMonth}}" />
-                                            <Setter TargetName="Date" Property="Tag" Value="2" />
-                                            <Setter TargetName="Date" Property="IsChecked" Value="{Binding IsChecked}"></Setter>
-
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding Level}" Value="3">
-                                            <Setter TargetName="Date" Property="Content" Value="{Binding Value,Converter={StaticResource myDateConverterYearsDay}}" />
-                                            <Setter TargetName="Date" Property="Tag" Value="3" />
-                                            <Setter TargetName="Date" Property="IsChecked" Value="{Binding IsChecked}"></Setter>
-
-                                        </DataTrigger>
-                                    </HierarchicalDataTemplate.Triggers>
-                                </HierarchicalDataTemplate>
-                            </TreeView.ItemTemplate>
-                        </TreeView>
-                    </StackPanel>
-                    <StackPanel Grid.Row="4" Grid.Column="1">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition></ColumnDefinition>
-                                <ColumnDefinition></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
-                            <Button  Grid.Column="0" Command="{Binding StartSorted}"  Margin="10" x:Name="ok" >ok</Button>
-                            <Button Grid.Column="1"  Margin="10">Cancel</Button>
-                        </Grid>
-                    </StackPanel>
-                </Grid>
-            </Border>
-        </Popup>-->
 
     </Grid>
 </UserControl>

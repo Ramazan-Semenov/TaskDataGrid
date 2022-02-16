@@ -222,72 +222,82 @@ namespace TaskDataGrid.ViewModel
                     {
                         filterstring = filterstring.Substring(0, i) + filterstring.Substring(i + "And".Length);
                     }
-                    //    MessageBox.Show(filterstring);
-
-                    //DataView.RowFilter = filterstring;
-                    //  RaisePropertyChanged("DataView");
+               
                     string newfiltdate = "";
-                    foreach (var item in _dates)
+                   ///Заходим в словарь
+                    for (int elemdic = 0; elemdic < filtersDate.Count; elemdic++)
                     {
-                        if ((item.IsChecked == false) || (item.IsChecked == null))
+                        ///заходим в года
+                        for (int year = 0; year < filtersDate.ElementAt(elemdic).Value.Count; year++)
                         {
-                            MessageBox.Show("Ok");
-                            int colday = DateTime.DaysInMonth(DateTime.Parse(item.Value.ToString()).Year, DateTime.Parse(item.Value.ToString()).Month);
-                            Vs.Add(String.Format("({0} < # {1} # or {0} > # {2}#) and ", ColumnHeader_Property, DateTime.Parse(item.Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(item.Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
-                          //  Console.WriteLine(v[0]);
-                        }
-                        else
-                        {
-                            int colday = DateTime.DaysInMonth(DateTime.Parse(item.Value.ToString()).Year, DateTime.Parse(item.Value.ToString()).Month);
-
-                            Vs.Remove(String.Format("({0} < # {1} # or {0} > # {2}#) and ", ColumnHeader_Property, DateTime.Parse(item.Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(item.Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
-
-                        }
-                        foreach (var item2 in item.Children)
-                        {
-                            //Debug.WriteLine(item2.Level);
-                            if ((item2.IsChecked == false)||(item2.IsChecked == null))
+                            
+                            if ((filtersDate.ElementAt(elemdic).Value[year].IsChecked==false)||(filtersDate.ElementAt(elemdic).Value[year].IsChecked == null))
                             {
-                                int colday = DateTime.DaysInMonth(DateTime.Parse(item2.Value.ToString()).Year, DateTime.Parse(item2.Value.ToString()).Month);
-                              //  Vs.Remove(String.Format("{0} < # {1} # or {0} > # {2}# and ", ColumnHeader_Property, DateTime.Parse(item.Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(item2.Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
-                                Vs.Add(String.Format("{0}  > # {1} # or {0} > #{2}#  and ", ColumnHeader_Property, DateTime.Parse(item2.Value.ToString()).ToString("MM/01/yyyy"), DateTime.Parse(item2.Value.ToString()).ToString("MM/" + colday.ToString() + "/yyyy")));
+                               
+                                int colday = DateTime.DaysInMonth(DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).Year, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).Month);
+                                Vs.Add(String.Format("({0} < # {1} # or {0} > # {2}#) and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
+                             //   Console.WriteLine("--------" + filtersDate.ElementAt(elemdic).Key+" || год");
 
+                                //   Console.WriteLine(filtersDate.ElementAt(elemdic).Value[year].IsChecked+" || "+ filtersDate.ElementAt(elemdic).Value[year].Value);
                             }
-                            else
+                            else if(filtersDate.ElementAt(elemdic).Value[year].IsChecked==true)
                             {
-                                int colday = DateTime.DaysInMonth(DateTime.Parse(item2.Value.ToString()).Year, DateTime.Parse(item2.Value.ToString()).Month);
-                                Vs.Remove(String.Format("{0} < # {1} # or {0} > # {2}# and ", ColumnHeader_Property, DateTime.Parse(item.Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(item2.Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
-
-                                Vs.Remove(String.Format("{0}  > # {1} # or {0} > #{2}#  and ", ColumnHeader_Property, DateTime.Parse(item2.Value.ToString()).ToString("MM/01/yyyy"), DateTime.Parse(item2.Value.ToString()).ToString("MM/" + colday.ToString() + "/yyyy")));
+                                int colday = DateTime.DaysInMonth(DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).Year, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).Month);
+                                Vs.Remove(String.Format("({0} < # {1} # or {0} > # {2}#) and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
 
                             }
 
-                            foreach (var item3 in item2.Children)
+
+                            ///заходим в месяц
+                            for (int month = 0; month < filtersDate.ElementAt(elemdic).Value[year].Children.Count; month++)
                             {
-                                if ((item3.IsChecked == false)||((item3.IsChecked == null)))
+
+                                if ((filtersDate.ElementAt(elemdic).Value[year].Children[month].IsChecked == false) || (filtersDate.ElementAt(elemdic).Value[year].Children[month].IsChecked == null))
                                 {
-                                    int colday = DateTime.DaysInMonth(DateTime.Parse(item3.Value.ToString()).Year, DateTime.Parse(item3.Value.ToString()).Month);
+                                    int colday = DateTime.DaysInMonth(DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).Year, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).Month);
+                                    Vs.Remove(String.Format("({0} < # {1} # or {0} > # {2}#) and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
 
-                                    Vs.Remove(String.Format("{0} > # {1} # or {0} > # {2}# and ", ColumnHeader_Property, DateTime.Parse(item.Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(item.Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
-                                    Vs.Remove(String.Format("{0}  > # {1} # or {0} > #{2}#  and ", ColumnHeader_Property, DateTime.Parse(item2.Value.ToString()).ToString("MM/01/yyyy"), DateTime.Parse(item2.Value.ToString()).ToString("MM/" + colday.ToString() + "/yyyy")));
-                                    Vs.Add(String.Format("{0}  <> # {1}#  and ", ColumnHeader_Property, DateTime.Parse(item3.Value.ToString()).ToString("MM/dd/yyyy")));
-
+                                    Vs.Add(String.Format("{0}  > # {1} # or {0} > #{2}#  and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).ToString("MM/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).ToString("MM/" + colday.ToString() + "/yyyy")));
+                                  //  Console.WriteLine("--------" + filtersDate.ElementAt(elemdic).Key + " || месяц");
 
                                 }
                                 else
                                 {
-                                    int colday = DateTime.DaysInMonth(DateTime.Parse(item3.Value.ToString()).Year, DateTime.Parse(item3.Value.ToString()).Month);
-                                    Vs.Remove(String.Format("{0} > # {1} # or {0} > # {2}# and ", ColumnHeader_Property, DateTime.Parse(item.Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(item.Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
-                                    Vs.Remove(String.Format("{0}  > # {1} # or {0} > #{2}#  and ", ColumnHeader_Property, DateTime.Parse(item2.Value.ToString()).ToString("MM/01/yyyy"), DateTime.Parse(item2.Value.ToString()).ToString("MM/" + colday.ToString() + "/yyyy")));
-
-                                    Vs.Remove(String.Format("{0}  <> # {1}#  and ", ColumnHeader_Property, DateTime.Parse(item3.Value.ToString()).ToString("MM/dd/yyyy")));
-
+                                    int colday = DateTime.DaysInMonth(DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).Year, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).Month);
+                                    Vs.Remove(String.Format("({0} < # {1} # or {0} > # {2}#) and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
+                                    Vs.Remove(String.Format("{0}  > # {1} # or {0} > #{2}#  and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).ToString("MM/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).ToString("MM/" + colday.ToString() + "/yyyy")));
 
                                 }
+                                /// Просматриваем все дни
+                                for (int day = 0; day < filtersDate.ElementAt(elemdic).Value[year].Children[month].Children.Count; day++)
+                                {
+                                    if ((filtersDate.ElementAt(elemdic).Value[year].Children[month].Children[day].IsChecked==false) ||(filtersDate.ElementAt(elemdic).Value[year].Children[month].Children[day].IsChecked == null))
+                                    {
+                                        int colday = DateTime.DaysInMonth(DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Children[day].Value.ToString()).Year, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Children[day].Value.ToString()).Month);
 
+                                        Vs.Remove(String.Format("({0} < # {1} # or {0} > # {2}#) and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
+                                        Vs.Remove(String.Format("{0}  > # {1} # or {0} > #{2}#  and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).ToString("MM/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).ToString("MM/" + colday.ToString() + "/yyyy")));
+                                        Vs.Add(String.Format("{0}  <> # {1}#  and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Children[day].Value.ToString()).ToString("MM/dd/yyyy")));
+
+                                    }
+                                    else
+                                    {
+                                        int colday = DateTime.DaysInMonth(DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Children[day].Value.ToString()).Year, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Children[day].Value.ToString()).Month);
+
+                                        Vs.Remove(String.Format("({0} < # {1} # or {0} > # {2}#) and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
+                                        Vs.Remove(String.Format("{0}  > # {1} # or {0} > #{2}#  and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).ToString("MM/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).ToString("MM/" + colday.ToString() + "/yyyy")));
+                                        Vs.Remove(String.Format("{0}  <> # {1}#  and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Children[day].Value.ToString()).ToString("MM/dd/yyyy")));
+
+                                    }
+                                }
                             }
-                        }
+
+
+
+
+                        }  
                     }
+      
                     string resultfiltertext = "";
                     foreach (var item in Vs)
                     {
@@ -313,7 +323,7 @@ namespace TaskDataGrid.ViewModel
                     {
                         resultfiltertext = v;
                     }
-                    MessageBox.Show(resultfiltertext);
+                   // MessageBox.Show(resultfiltertext);
                     DataView.RowFilter = resultfiltertext;
                     RaisePropertyChanged("DataView");
 
@@ -579,7 +589,6 @@ namespace TaskDataGrid.ViewModel
                                            _dates[i].Children[j].Children[k].IsChecked = _dates[i].Children[j].Children[k].IsChecked;
 
                                         }
-                                        Console.WriteLine(_dates[i].Children[j].Children[k].IsChecked.HasValue+" |||| "+ _dates[i].Children[j].Children[k].Value);
 
                                     }
                                 }

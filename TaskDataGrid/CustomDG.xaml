@@ -109,7 +109,7 @@
             </DataGrid.Resources>
         </DataGrid>
 
-        <Popup  x:Name="popExcel"  Height="350" Width="300"  Placement="Bottom"  AllowsTransparency="True"  StaysOpen="False">
+        <Popup  x:Name="popExcel"  Height="auto" Width="300"  Placement="Bottom"  AllowsTransparency="True"  StaysOpen="{Binding IsOpen}">
             
             <Grid   Background="White"  Opacity="0.98">
                 <Grid.ColumnDefinitions>
@@ -206,7 +206,10 @@
                         </TextBox>
                     </Grid>
                 </StackPanel>
+                <CheckBox Content="Выделить все"  IsChecked="{Binding Selected}"></CheckBox>
+
                 <StackPanel Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3">
+                    <ScrollViewer Visibility="{Binding lbFilterVisibility}">
                     <ListBox Height="150"
                             ItemsSource="{Binding ListFilterContent}"
                                      VirtualizingStackPanel.CacheLengthUnit="Page"
@@ -237,8 +240,9 @@
                         </ListBox.ItemTemplate>
 
                     </ListBox>
-                    <CheckBox Content="Выделить все"  IsChecked="{Binding Selected}"></CheckBox>
+                    </ScrollViewer>
                     <!--Content="{Binding Value, Converter={StaticResource myDateConverterYears}-->
+                    <ScrollViewer MinHeight="200" Visibility="{Binding TreeVisibility}"  >
                     <TreeView  Visibility="{Binding TreeVisibility}"  x:Name="Tree" ItemsSource="{Binding Dates, Mode=TwoWay}">
                         <TreeView.ItemTemplate>
                             <HierarchicalDataTemplate   ItemsSource="{Binding Children, Mode=TwoWay}">
@@ -265,6 +269,7 @@
                        
                         </TreeView.ItemTemplate>
                     </TreeView><!--Visibility="{Binding ButtonVisibility}"-->
+                    </ScrollViewer>
                     <UniformGrid
                             
                             Background="Transparent"
@@ -276,12 +281,12 @@
                                 Command="{Binding StartSorted}"
                                 Content="OK" />
 
-                        <!--<Button
+                        <Button
                                 Width="100"
                                 Margin="6,0,0,0"
                                 HorizontalAlignment="Right"
-                                Command="{x:Static control:FilterDataGrid.CancelFilter}"
-                                Content="{Binding Translate.Cancel}" />-->
+                                Command="{Binding CancelCommand}"
+                                Content="Cancel" />
                     </UniformGrid>
                     <!--<Button   Command="{Binding StartSorted}"  x:Name="ok" >ok</Button>-->
 

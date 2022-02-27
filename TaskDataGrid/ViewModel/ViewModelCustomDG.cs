@@ -460,11 +460,9 @@ namespace TaskDataGrid.ViewModel
                     { 
                         string level = sender.Level.ToString();
                         string value = sender.Value.ToString();
-
-                        int colday = DateTime.DaysInMonth(DateTime.Parse(value).Year, DateTime.Parse(value).Month);
-                 
+                     
+                        int colday = DateTime.DaysInMonth(DateTime.Parse(value).Year, DateTime.Parse(value).Month);                 
                         if (level == "2")
-
                         {
                             for (int i = 0; i < _dates.Count; i++)
                             {
@@ -478,6 +476,7 @@ namespace TaskDataGrid.ViewModel
                                     {
                                         _dates[i].IsChecked = null;
                                         _dates[i].Children[j].IsChecked = false;
+                                        
 
                                     }
                                     for (int k = 0; k < _dates[i].Children[j].Children.Count; k++)
@@ -548,7 +547,10 @@ namespace TaskDataGrid.ViewModel
 
                 });
             }
-        }
+        }                       
+        bool dopM = true;
+        bool dopY = true;
+
         /// <summary>
         /// Событие на нажатие на дату checkbox=true
         /// </summary>
@@ -561,17 +563,22 @@ namespace TaskDataGrid.ViewModel
                     { 
                         string level = sender.Level.ToString();
                         string value = sender.Value.ToString();
+                        int countd = 0;
+                        int countp = 0;
 
+                        int countm = 0;
+                        int countmp = 0;
                         int colday = DateTime.DaysInMonth(DateTime.Parse(value).Year, DateTime.Parse(value).Month);
 
                         //Месяц checkbox=true
-                        if (level == "2")
+                        if (level == "2"&& dopM==true&& dopY==true)
                         {
                             //Цикл на год
                             for (int i = 0; i < _dates.Count; i++)
                             {
                                 if (DateTime.Parse(_dates[i].Value.ToString()).Year == DateTime.Parse(value).Year)
                                 {
+                                    Console.WriteLine("4");
                                     _dates[i].IsChecked = true;
                                 }
                                 //Цикл на месяц
@@ -579,6 +586,8 @@ namespace TaskDataGrid.ViewModel
                                 {
                                     if ((DateTime.Parse(_dates[i].Children[j].Value.ToString()).Year == DateTime.Parse(value).Year) & (DateTime.Parse(_dates[i].Children[j].Value.ToString()).Month == DateTime.Parse(value).Month))
                                     {
+                                        Console.WriteLine("5");
+
                                         _dates[i].Children[j].IsChecked = true;
 
                                     }
@@ -587,8 +596,10 @@ namespace TaskDataGrid.ViewModel
                                     {
                                         if ((DateTime.Parse(_dates[i].Children[j].Children[k].Value.ToString()).Year == DateTime.Parse(value).Year))
                                         {
-                                            _dates[i].Children[j].Children[k].IsChecked = true;
+                                            Console.WriteLine("6");
 
+                                            _dates[i].Children[j].Children[k].IsChecked = true;
+                                           
                                         }
                                     }
                                 }
@@ -596,13 +607,14 @@ namespace TaskDataGrid.ViewModel
 
                         }
                         //Год checkbox=true
-                        else if (level == "1")
+                         if (level == "1" && dopM == true && dopY == true)
                         {
                             //Цикл на год
                             for (int i = 0; i < _dates.Count; i++)
                             {
                                 if (DateTime.Parse(_dates[i].Value.ToString()).Year == DateTime.Parse(value).Year)
                                 {
+                                    Console.WriteLine("1");
                                     _dates[i].IsChecked = true;
                                 }
                                 //Цикл на месяц
@@ -610,6 +622,8 @@ namespace TaskDataGrid.ViewModel
                                 {
                                     if ((DateTime.Parse(_dates[i].Children[j].Value.ToString()).Year == DateTime.Parse(value).Year))
                                     {
+                                        Console.WriteLine("2");
+
                                         _dates[i].Children[j].IsChecked = true;
                                     }
                                     //Цикл на день
@@ -617,6 +631,8 @@ namespace TaskDataGrid.ViewModel
                                     {
                                         if ((DateTime.Parse(_dates[i].Children[j].Children[k].Value.ToString()).Year == DateTime.Parse(value).Year))
                                         {
+                                            Console.WriteLine("3");
+
                                             _dates[i].Children[j].Children[k].IsChecked = true;
 
                                         }
@@ -625,37 +641,78 @@ namespace TaskDataGrid.ViewModel
                             }
 
                         }
-                        else if (level == "3")
-                        {
+                         if (level == "3" && dopM == true && dopY == true)
+                         {
                             for (int i = 0; i < _dates.Count; i++)
                             {
                                 if (DateTime.Parse(_dates[i].Value.ToString()).Year == DateTime.Parse(value).Year)
                                 {
-                                   // _dates[i].IsChecked = true;
+                                    
                                 }
 
                                 for (int j = 0; j < _dates[i].Children.Count; j++)
                                 {
-                                    if ((DateTime.Parse(_dates[i].Children[j].Value.ToString()).Month == DateTime.Parse(value).Month) & (DateTime.Parse(_dates[i].Children[j].Value.ToString()).Year == DateTime.Parse(value).Year))
-                                    {
-                                       // _dates[i].Children[j].IsChecked = true;
-                                    }
+                                
                                     //Цикл на день
                                     for (int k = 0; k < _dates[i].Children[j].Children.Count; k++)
                                     {
-                                        if ((DateTime.Parse(_dates[i].Children[j].Children[k].Value.ToString()).Month == DateTime.Parse(value).Month))
+                                        if (DateTime.Parse(_dates[i].Children[j].Children[k].Value.ToString()).Month == DateTime.Parse(value).Month)
                                         {
+
                                             if (_dates[i].Children[j].Children[k].IsChecked!=false)
                                             {
                                                _dates[i].Children[j].Children[k].IsChecked = _dates[i].Children[j].Children[k].IsChecked;
 
                                             }
+                                            countd++;
+                                            //Console.WriteLine(_dates[i].Children[j].Children[k].IsChecked+" | "+ _dates[i].Children[j].Children[k].Value);
+                                            if (_dates[i].Children[j].Children[k].IsChecked == true)
+                                            {
+                                                //checkm = false;
+                                                countp++;
+                                            }
 
                                         }
+
+                                    }
+                                  
+                                    if ((DateTime.Parse(_dates[i].Children[j].Value.ToString()).Month == DateTime.Parse(value).Month) & (DateTime.Parse(_dates[i].Children[j].Value.ToString()).Year == DateTime.Parse(value).Year))
+                                    {
+                                        if (countd == countp)
+                                        {
+                                            dopM = false;
+                                         
+                                            _dates[i].Children[j].IsChecked = true;
+                                        }
+                                    }
+                                    if (DateTime.Parse(_dates[i].Value.ToString()).Year == DateTime.Parse(value).Year)
+                                    {
+                                        countm++;
+                                        if (_dates[i].Children[j].IsChecked == true)
+                                        {
+                                            countmp++;
+                                        }
+                                    }
+
+                                    dopM = true;
+                                }
+
+                                  if (DateTime.Parse(_dates[i].Value.ToString()).Year == DateTime.Parse(value).Year)
+                                 {
+                                    if (countm== countmp)
+                                    {
+                                        dopY = false;
+
+                                        _dates[i].IsChecked = true;
                                     }
                                 }
+                          
                             }
+                            dopY = true;
+
                         }
+
+
                     }
                     catch (Exception exp)
                     {

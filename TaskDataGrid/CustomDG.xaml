@@ -246,7 +246,7 @@
                     <TreeView  Visibility="{Binding TreeVisibility}"  x:Name="Tree" ItemsSource="{Binding Dates, Mode=TwoWay}">
                         <TreeView.ItemTemplate>
                             <HierarchicalDataTemplate   ItemsSource="{Binding Children, Mode=TwoWay}">
-                                <CheckBox IsThreeState="{Binding IsThreeState}" x:Name="T"  IsChecked="{Binding IsChecked}" >
+                                <CheckBox IsThreeState="False" x:Name="T"  IsChecked="{Binding IsChecked}" >
                                     <CheckBox.Content >
                                         <MultiBinding Converter="{StaticResource myDateConverterYears}">
                                             <Binding Path="Level" />

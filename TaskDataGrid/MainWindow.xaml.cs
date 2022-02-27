@@ -33,7 +33,7 @@ namespace TaskDataGrid
             connection.Open();
             Console.WriteLine("Start1");
             DataTable dataTable = new DataTable();
-            SqlCommand command = new SqlCommand("SELECT TOP(100) [Id] ,[FirstName] ,[LastName] ,[Manager] ,[Salary] ,[StartDate]  FROM [dbo].[Employe]", connection);
+            SqlCommand command = new SqlCommand("SELECT TOP(100) [Id] ,[FirstName] as 'Имя' ,[LastName] As 'Фамилия' ,[Manager] ,[Salary] ,[StartDate]  FROM [dbo].[Employe]", connection);
 
             SqlDataAdapter adapter = new SqlDataAdapter(command);
             adapter.Fill(dataTable);

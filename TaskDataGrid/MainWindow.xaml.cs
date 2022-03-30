@@ -22,7 +22,8 @@ namespace TaskDataGrid
     /// </summary>
     public partial class MainWindow : Window
     {
-        
+        public DataTable dt { get; set; }
+        public List<int> rr { get; set; }
         public MainWindow()
         {
             InitializeComponent();
@@ -38,10 +39,12 @@ namespace TaskDataGrid
             SqlDataAdapter adapter = new SqlDataAdapter(command);
             adapter.Fill(dataTable);
 
-
+            dt = dataTable;
+            //rr= new List<int>() { 4, 5 };
+            //DataContext = this;
 
             M.DataTableProp = dataTable;
-            M.ListTypeDate = new List<int>() {4,5};
+            M.ListTypeDate = new List<int>() { 4, 5 };
         }
 
        

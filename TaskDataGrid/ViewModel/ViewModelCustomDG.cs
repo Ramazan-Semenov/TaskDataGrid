@@ -254,14 +254,14 @@ namespace TaskDataGrid.ViewModel
                                 {
                                
                                     int colday = DateTime.DaysInMonth(DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).Year, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).Month);
-                                    ListSettingSqlFilter.Add(String.Format("({0} < # {1} # or {0} > # {2}#) and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
+                                    ListSettingSqlFilter.Add(String.Format("([{0}] < # {1} # or [{0}] > # {2}#) and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
 
                                     //   Console.WriteLine(filtersDate.ElementAt(elemdic).Value[year].IsChecked+" || "+ filtersDate.ElementAt(elemdic).Value[year].Value);
                                 }
                                 else if(filtersDate.ElementAt(elemdic).Value[year].IsChecked==true)
                                 {
                                     int colday = DateTime.DaysInMonth(DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).Year, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).Month);
-                                    ListSettingSqlFilter.Remove(String.Format("({0} < # {1} # or {0} > # {2}#) and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
+                                    ListSettingSqlFilter.Remove(String.Format("([{0}] < # {1} # or [{0}] > # {2}#) and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
 
                                 }
 
@@ -273,16 +273,16 @@ namespace TaskDataGrid.ViewModel
                                     if ((filtersDate.ElementAt(elemdic).Value[year].Children[month].IsChecked == false) || (filtersDate.ElementAt(elemdic).Value[year].Children[month].IsChecked == null))
                                     {
                                         int colday = DateTime.DaysInMonth(DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).Year, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).Month);
-                                        ListSettingSqlFilter.Remove(String.Format("({0} < # {1} # or {0} > # {2}#) and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
+                                        ListSettingSqlFilter.Remove(String.Format("([{0}] < # {1} # or [{0}] > # {2}#) and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
 
-                                        ListSettingSqlFilter.Add(String.Format("{0}  > # {1} # or {0} > #{2}#  and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).ToString("MM/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).ToString("MM/" + colday.ToString() + "/yyyy")));
+                                        ListSettingSqlFilter.Add(String.Format("[{0}]  > # {1} # or [{0}] > #{2}#  and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).ToString("MM/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).ToString("MM/" + colday.ToString() + "/yyyy")));
 
                                     }
                                     else
                                     {
                                         int colday = DateTime.DaysInMonth(DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).Year, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).Month);
-                                        ListSettingSqlFilter.Remove(String.Format("({0} < # {1} # or {0} > # {2}#) and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
-                                        ListSettingSqlFilter.Remove(String.Format("{0}  > # {1} # or {0} > #{2}#  and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).ToString("MM/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).ToString("MM/" + colday.ToString() + "/yyyy")));
+                                        ListSettingSqlFilter.Remove(String.Format("([{0}] < # {1} # or [{0}] > # {2}#) and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
+                                        ListSettingSqlFilter.Remove(String.Format("[{0}]  > # {1} # or [{0}] > #{2}#  and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).ToString("MM/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).ToString("MM/" + colday.ToString() + "/yyyy")));
 
                                     }
                                     /// Просматриваем все дни
@@ -292,18 +292,18 @@ namespace TaskDataGrid.ViewModel
                                         {
                                             int colday = DateTime.DaysInMonth(DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Children[day].Value.ToString()).Year, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Children[day].Value.ToString()).Month);
 
-                                            ListSettingSqlFilter.Remove(String.Format("({0} < # {1} # or {0} > # {2}#) and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
-                                            ListSettingSqlFilter.Remove(String.Format("{0}  > # {1} # or {0} > #{2}#  and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).ToString("MM/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).ToString("MM/" + colday.ToString() + "/yyyy")));
-                                            ListSettingSqlFilter.Add(String.Format("{0}  <> # {1}#  and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Children[day].Value.ToString()).ToString("MM/dd/yyyy")));
+                                            ListSettingSqlFilter.Remove(String.Format("([{0}] < # {1} # or [{0}] > # {2}#) and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
+                                            ListSettingSqlFilter.Remove(String.Format("[{0}]  > # {1} # or [{0}] > #{2}#  and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).ToString("MM/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).ToString("MM/" + colday.ToString() + "/yyyy")));
+                                            ListSettingSqlFilter.Add(String.Format("[{0}]  <> # {1}#  and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Children[day].Value.ToString()).ToString("MM/dd/yyyy")));
 
                                         }
                                         else
                                         {
                                             int colday = DateTime.DaysInMonth(DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Children[day].Value.ToString()).Year, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Children[day].Value.ToString()).Month);
 
-                                            ListSettingSqlFilter.Remove(String.Format("({0} < # {1} # or {0} > # {2}#) and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
-                                            ListSettingSqlFilter.Remove(String.Format("{0}  > # {1} # or {0} > #{2}#  and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).ToString("MM/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).ToString("MM/" + colday.ToString() + "/yyyy")));
-                                            ListSettingSqlFilter.Remove(String.Format("{0}  <> # {1}#  and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Children[day].Value.ToString()).ToString("MM/dd/yyyy")));
+                                            ListSettingSqlFilter.Remove(String.Format("([{0}] < # {1} # or [{0}] > # {2}#) and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("01/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Value.ToString()).ToString("12/" + colday.ToString() + "/yyyy")));
+                                            ListSettingSqlFilter.Remove(String.Format("[{0}]  > # {1} # or [{0}] > #{2}#  and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).ToString("MM/01/yyyy"), DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Value.ToString()).ToString("MM/" + colday.ToString() + "/yyyy")));
+                                            ListSettingSqlFilter.Remove(String.Format("[{0}]  <> # {1}#  and ", filtersDate.ElementAt(elemdic).Key, DateTime.Parse(filtersDate.ElementAt(elemdic).Value[year].Children[month].Children[day].Value.ToString()).ToString("MM/dd/yyyy")));
 
                                         }
                                     }
@@ -745,7 +745,7 @@ namespace TaskDataGrid.ViewModel
             get
             {
                 return new RelayCommand<FilterObj>((FilterObj sender) => {
-                    stringfilter.Add(string.Format("{0} <>'{1}' And ", ColumnHeader_Property, sender.Title));
+                    stringfilter.Add(string.Format("[{0}] <>'{1}' And ", ColumnHeader_Property, sender.Title));
 
 
 

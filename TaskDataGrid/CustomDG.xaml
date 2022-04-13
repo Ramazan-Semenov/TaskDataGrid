@@ -109,9 +109,148 @@
             </DataGrid.Resources>
         </DataGrid>
 
-        <Popup  x:Name="popExcel"  Height="auto" Width="300"  Placement="Bottom"  AllowsTransparency="True"  StaysOpen="{Binding IsOpen}">
-            
-            <Grid   Background="White"  Opacity="0.98">
+        <Popup  x:Name="popExcel" MinHeight="300"  Height="auto" Width="300"  Placement="Bottom"  AllowsTransparency="True"  StaysOpen="{Binding IsOpen}">
+            <Grid Background="White">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="30"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Label>
+                        <Path
+                                                x:Name="PathFilterIcon"
+                                                Margin="0"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Data="{StaticResource FilterDelete}"
+                                                Fill="Gray"
+                                                Stretch="Uniform" />
+                    </Label>
+                </Grid>
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
+                    <Label Foreground="Gray" Content="Clear filter ' '"></Label>
+                    <Separator Background="Gray" VerticalContentAlignment="Top" Height="10" Grid.Row="1"/>
+                    <Grid Margin="0 0 5 0" Grid.Row="2">
+                        <Border BorderBrush="Gray" BorderThickness="1">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition MinWidth="30" Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox VerticalContentAlignment="Center" BorderThickness="0" Grid.Column="0"/>
+                                <TextBlock Margin="10 0 0 0" VerticalAlignment="Center" Grid.Column="0" Text="Search (contains)" Foreground="Gray"/>
+                                <Button Background="Transparent"  BorderThickness="0" Grid.Column="1">
+                                    <Path
+                                                Margin="0"
+                               
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Data="{StaticResource  Magnifier}"
+                                                Fill="Black"
+                                                Stretch="Uniform" />
+                                </Button>
+                                <Label Margin="0 2 0 2" Width="1" BorderThickness="1" BorderBrush="LightGray" Grid.Column="2"/>
+                                <Label Grid.Column="3" FontSize="14" Content="*а*" VerticalContentAlignment="Top"/>
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Row="4" Margin="0 0 5 0">
+                        <Border BorderBrush="Gray" BorderThickness="1">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <CheckBox IsChecked="{Binding Selected}" Margin="10 5 0 0" Content="(Select all)"/>
+                                <ScrollViewer Grid.Row="1" Visibility="{Binding lbFilterVisibility}">
+                                    <ListBox  
+                            ItemsSource="{Binding ListFilterContent}"
+                                     VirtualizingStackPanel.CacheLengthUnit="Page"
+            VirtualizingPanel.IsVirtualizing="True" 
+            VirtualizingStackPanel.VirtualizationMode="Recycling"
+                            
+                            BorderThickness="0" Grid.Row="1"
+                           x:Name="lbFilter" Visibility="{Binding lbFilterVisibility}" >
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <CheckBox Margin="10 0 0 0" BorderBrush="Transparent" IsChecked="{Binding IsChecked}"   Content="{Binding Title}"  Foreground="#FF171111" >
+
+                                                    <i:Interaction.Triggers>
+                                                        <i:EventTrigger EventName="Checked">
+                                                            <cmd:EventToCommand Command="{Binding DataContext.String_Checked, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}"
+                                                     PassEventArgsToCommand="True" />
+                                                        </i:EventTrigger>
+                                                        <i:EventTrigger EventName="Unchecked">
+                                                            <cmd:EventToCommand Command="{Binding DataContext.String_UnChecked, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}"
+                                                     PassEventArgsToCommand="True" />
+                                                        </i:EventTrigger>
+                                                    </i:Interaction.Triggers>
+
+                                                </CheckBox>
+
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+
+                                    </ListBox>
+                                </ScrollViewer>
+                                <ScrollViewer Grid.Row="1" MinHeight="200" Visibility="{Binding TreeVisibility}"  >
+                                    <TreeView BorderThickness="0" Visibility="{Binding TreeVisibility}"  x:Name="Tree" ItemsSource="{Binding Dates, Mode=TwoWay}">
+                                        <TreeView.ItemTemplate>
+                                            <HierarchicalDataTemplate   ItemsSource="{Binding Children, Mode=TwoWay}">
+                                                <CheckBox Margin="10 0 0 0" IsThreeState="False" x:Name="T"  IsChecked="{Binding IsChecked}" >
+                                                    <CheckBox.Content >
+                                                        <MultiBinding Converter="{StaticResource myDateConverterYears}">
+                                                            <Binding Path="Level" />
+
+                                                            <Binding Path="Value"/>
+                                                        </MultiBinding>
+                                                    </CheckBox.Content>
+                                                    <i:Interaction.Triggers>
+                                                        <i:EventTrigger EventName="Checked">
+                                                            <cmd:EventToCommand Command="{Binding DataContext.Date_Checked, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}"
+                                                     PassEventArgsToCommand="True" />
+                                                        </i:EventTrigger>
+                                                        <i:EventTrigger EventName="Unchecked">
+                                                            <cmd:EventToCommand Command="{Binding DataContext.Date_UnChecked, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}"
+                                                     PassEventArgsToCommand="True" />
+                                                        </i:EventTrigger>
+                                                    </i:Interaction.Triggers>
+                                                </CheckBox>
+                                            </HierarchicalDataTemplate>
+
+                                        </TreeView.ItemTemplate>
+                                    </TreeView>
+                                </ScrollViewer>
+                            </Grid>
+                        </Border>
+
+
+                    </Grid>
+                    <Grid Grid.Row="5" Margin="0 0 5 0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="15"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="15"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Button Height="20" Command="{Binding StartSorted}" Grid.Column="1" Content="Ok"/>
+                        <Button  Command="{Binding CancelCommand}" Height="20" Grid.Column="3" Content="Cancel"/>
+
+                    </Grid>
+                </Grid>
+            </Grid>
+            <!--<Grid   Background="White"  Opacity="0.98">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="25"/>
                     <ColumnDefinition Width="92*"/>
@@ -241,7 +380,7 @@
 
                     </ListBox>
                     </ScrollViewer>
-                    <!--Content="{Binding Value, Converter={StaticResource myDateConverterYears}-->
+                    --><!--Content="{Binding Value, Converter={StaticResource myDateConverterYears}--><!--
                     <ScrollViewer MinHeight="200" Visibility="{Binding TreeVisibility}"  >
                     <TreeView  Visibility="{Binding TreeVisibility}"  x:Name="Tree" ItemsSource="{Binding Dates, Mode=TwoWay}">
                         <TreeView.ItemTemplate>
@@ -268,7 +407,7 @@
                             </HierarchicalDataTemplate>
                        
                         </TreeView.ItemTemplate>
-                    </TreeView><!--Visibility="{Binding ButtonVisibility}"-->
+                    </TreeView>--><!--Visibility="{Binding ButtonVisibility}"--><!--
                     </ScrollViewer>
                     <UniformGrid
                             
@@ -288,11 +427,11 @@
                                 Command="{Binding CancelCommand}"
                                 Content="Cancel" />
                     </UniformGrid>
-                    <!--<Button   Command="{Binding StartSorted}"  x:Name="ok" >ok</Button>-->
+                    --><!--<Button   Command="{Binding StartSorted}"  x:Name="ok" >ok</Button>--><!--
 
                 </StackPanel>
 
-            </Grid>
+            </Grid>-->
         </Popup>
 
 

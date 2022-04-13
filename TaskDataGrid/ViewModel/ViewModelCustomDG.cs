@@ -731,7 +731,7 @@ namespace TaskDataGrid.ViewModel
             get
             {
                 return new RelayCommand<FilterObj>((FilterObj sender) => {
-                    stringfilter.Remove(string.Format("{0} <>'{1}' And ", ColumnHeader_Property, sender.Title));
+                    stringfilter.Remove(string.Format("[{0}] <>'{1}' And ", ColumnHeader_Property, sender.Title));
 
 
                 });

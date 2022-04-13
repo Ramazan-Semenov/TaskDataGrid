@@ -72,6 +72,8 @@
             <DataGrid.Resources>
 
                 <Style  TargetType="DataGridColumnHeader">
+                    <Setter Property="Height" Value="25"/>
+                    <Setter Property="FontSize" Value="10"/>
                     <Setter Property="ContentTemplate">
                         <Setter.Value>
                             <DataTemplate>
@@ -85,13 +87,14 @@
 
                                             </ColumnDefinition>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0"  Text="{Binding}" Margin="10,5" FontFamily="Times New Roman" FontSize="18"></TextBlock>
+                                        <TextBlock Grid.Column="0"  Text="{Binding}" Margin="10 0 20 0" VerticalAlignment="Center" FontFamily="Times New Roman" FontSize="14"></TextBlock>
                                         <Button x:Name="p" Command="{Binding DataContext.OpenPopup, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}}" 
                                                 CommandParameter="{Binding }" 
-                                                BorderBrush="Black" BorderThickness="0.1"  Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center" 
-                                                Tag="{Binding}" Click="p_Click"  Background="Transparent" Grid.Column="1" Width="25" Height="25">
+                                                
+                                                BorderBrush="Black" BorderThickness="0.1"  Margin="0" 
+                                                Tag="{Binding}" Click="p_Click"  Background="Transparent" Grid.Column="1" >
                                             <!---->
-                                            <Path HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 0 2 5" Fill="Black">
+                                            <Path  Margin="0 -9 7 0" Fill="Black">
                                                 <Path.Data>
                                                     <Geometry>
                                                         M 7 10 L 12 15 L 17 10 H 7 Z
@@ -184,7 +187,7 @@
                            x:Name="lbFilter" Visibility="{Binding lbFilterVisibility}" >
                                         <ListBox.ItemTemplate>
                                             <DataTemplate>
-                                                <CheckBox Margin="10 0 0 0" BorderBrush="Transparent" IsChecked="{Binding IsChecked}"   Content="{Binding Title}"  Foreground="#FF171111" >
+                                                <CheckBox Margin="10 0 0 0" IsChecked="{Binding IsChecked}"   Content="{Binding Title}"  Foreground="#FF171111" >
 
                                                     <i:Interaction.Triggers>
                                                         <i:EventTrigger EventName="Checked">
